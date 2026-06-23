@@ -1,0 +1,12 @@
+{
+  "name": "bbva-project",
+  "private": true,
+  "scripts": {
+    "frontend": "cd bbva-fronted && npm run dev",
+    "backend": "cd bbva-backend && .\\venv\\Scripts\\activate && uvicorn main:app --reload --port 8000",
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\""
+  },
+  "dependencies": {
+    "concurrently": "^10.0.3"
+  }
+}

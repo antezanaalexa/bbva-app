@@ -1,7 +1,6 @@
-# main.py - Punto de entrada de la aplicación FastAPI BBVA Perú
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import cuentas, transacciones, ahorros, creditos, pagos
+from routers import cuentas, transacciones, ahorros, creditos, pagos, auth
 
 app = FastAPI(
     title="BBVA Perú — API Banca por Internet",
@@ -17,6 +16,7 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+app.include_router(auth.router,          prefix="/api/auth",          tags=["Auth"])
 app.include_router(cuentas.router,       prefix="/api/cuentas",       tags=["Cuentas"])
 app.include_router(transacciones.router, prefix="/api/transacciones", tags=["Transacciones"])
 app.include_router(ahorros.router,       prefix="/api/ahorros",       tags=["Ahorros"])

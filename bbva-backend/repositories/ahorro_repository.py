@@ -1,44 +1,96 @@
 # repositories/ahorro_repository.py
-from repositories.base import supabase
+from repositories.base import get_connection
+
 
 class AhorroRepository:
 
     def obtener_por_usuario(self, user_id: str) -> list:
-        response = supabase.table("cuentas_ahorro") \
-            .select("*") \
-            .eq("user_id", user_id) \
-            .execute()
-        return response.data
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT *
+            FROM cuentas_ahorro
+            WHERE user_id = %s
+            ORDER BY fecha_apertura DESC
+        """, (str(user_id),))
+
+        data = cur.fetchall()
+        cur.close()
+        conn.close()
+        return data
 
     def obtener_por_id(self, cuenta_id: str) -> dict:
-        response = supabase.table("cuentas_ahorro") \
-            .select("*") \
-            .eq("id", cuenta_id) \
-            .execute()
-        if not response.data:
-            return None
-        return response.data[0]
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT *
+            FROM cuentas_ahorro
+            WHERE id = %s
+        """, (str(cuenta_id),))
+
+        data = cur.fetchone()
+        cur.close()
+        conn.close()
+        return data
 
     def actualizar_saldo(self, cuenta_id: str, nuevo_saldo: float) -> dict:
-        response = supabase.table("cuentas_ahorro") \
-            .update({"saldo": nuevo_saldo}) \
-            .eq("id", cuenta_id) \
-            .execute()
-        return response.data[0]
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            UPDATE cuentas_ahorro
+            SET saldo = %s,
+                updated_at = NOW()
+            WHERE id = %s
+            RETURNING *
+        """, (nuevo_saldo, str(cuenta_id)))
+
+        data = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+        return data
 
     def insertar_movimiento(self, datos: dict) -> dict:
-        response = supabase.table("movimientos_ahorro").insert({
-            "cuenta_id":   str(datos["cuenta_id"]),
-            "tipo":        datos["tipo"],
-            "monto":       datos["monto"],
-            "descripcion": datos.get("descripcion", "")
-        }).execute()
-        return response.data[0]
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            INSERT INTO movimientos_ahorro (
+                cuenta_id,
+                tipo,
+                monto,
+                descripcion
+            )
+            VALUES (%s, %s, %s, %s)
+            RETURNING *
+        """, (
+            str(datos["cuenta_id"]),
+            datos["tipo"],
+            datos["monto"],
+            datos.get("descripcion", "")
+        ))
+
+        data = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+        return data
 
     def obtener_movimientos(self, cuenta_id: str) -> list:
-        response = supabase.table("movimientos_ahorro") \
-            .select("*") \
-            .eq("cuenta_id", cuenta_id) \
-            .order("fecha", desc=True) \
-            .execute()
-        return response.data
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT *
+            FROM movimientos_ahorro
+            WHERE cuenta_id = %s
+            ORDER BY fecha DESC
+        """, (str(cuenta_id),))
+
+        data = cur.fetchall()
+        cur.close()
+        conn.close()
+        return data

@@ -1,8 +1,16 @@
-# repositories/base.py
-# Conexión única a Supabase reutilizada por todos los repositories
 import os
-from supabase import create_client
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 
 load_dotenv()
-supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_KEY"))
+
+def get_connection():
+    return psycopg2.connect(
+        host=os.getenv("DB_HOST", "localhost"),
+        port=os.getenv("DB_PORT", "5432"),
+        database=os.getenv("DB_NAME", "bd_core_financiero"),
+        user=os.getenv("DB_USER", "postgres"),
+        password=os.getenv("DB_PASSWORD", "TU_PASSWORD"),
+        cursor_factory=RealDictCursor
+    )

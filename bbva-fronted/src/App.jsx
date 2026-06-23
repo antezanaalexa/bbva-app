@@ -25,7 +25,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-      <Route path="/registro" element={<PublicRoute><Register /></PublicRoute>} />
+      <Route path="/registro" element={<Register />} />
       <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/ahorros" element={<PrivateRoute><Ahorros /></PrivateRoute>} />
       <Route path="/creditos" element={<PrivateRoute><Creditos /></PrivateRoute>} />

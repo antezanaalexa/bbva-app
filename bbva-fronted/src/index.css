@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --bbva-blue: #004481;
+  --bbva-blue: #0726B4;
   --bbva-dark: #072146;
-  --bbva-light: #f4f7ff;
+  --bbva-light: #1464A0;
+  --bbva-bg: #f4f6f8;
 }
 
 * {
@@ -15,4 +16,19 @@ body {
   font-family: 'Inter', sans-serif;
   background: #f5f7fa;
   color: #111827;
+}
+
+.input-bbva {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+  padding: 18px 20px;
+  font-size: 16px;
+  color: #072146;
+  background: white;
+  outline: none;
+}
+
+.input-bbva:focus {
+  border-color: #0726b4;
 }

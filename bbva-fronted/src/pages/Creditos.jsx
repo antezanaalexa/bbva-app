@@ -1,150 +1,510 @@
-import { useState } from 'react'
-import PageShell from '../layouts/PageShell'
+import { useEffect, useState } from "react";
+import {
+  CreditCard,
+  Calculator,
+  FileText,
+  CheckCircle,
+  Clock,
+  ShieldCheck,
+} from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import api from "../services/api";
+import DashboardShell from "../components/dashboard/DashboardShell";
 
 export default function Creditos() {
-  const [tab, setTab] = useState('activos')
-  const [simMonto, setSimMonto] = useState(10000)
-  const [simPlazo, setSimPlazo] = useState(24)
+  const { user } = useAuth();
 
-  const tea = 0.018
-  const cuota = ((simMonto * tea) / (1 - Math.pow(1 + tea, -simPlazo))).toFixed(2)
+  const [tab, setTab] = useState("activos");
+  const [solicitudes, setSolicitudes] = useState([]);
+  const [cronograma, setCronograma] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const cronograma = [
-    { cuota: 1, fecha: '10/06/2026', capital: 399.50, interes: 250.50, total: 650.00, estado: 'Pendiente' },
-    { cuota: 2, fecha: '10/07/2026', capital: 406.68, interes: 243.32, total: 650.00, estado: 'Pendiente' },
-    { cuota: 3, fecha: '10/08/2026', capital: 413.99, interes: 236.01, total: 650.00, estado: 'Pendiente' },
-  ]
+  const [simMonto, setSimMonto] = useState(10000);
+  const [simPlazo, setSimPlazo] = useState(24);
+  const [simResultado, setSimResultado] = useState(null);
+  const [simCargando, setSimCargando] = useState(false);
+
+  const nombreUsuario =
+    user?.user_metadata?.nombres || user?.email?.split("@")[0] || "Cliente";
+
+  const cargarSolicitudes = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      const res = await api.get(`/api/creditos/solicitudes/${user.id}`);
+      setSolicitudes(res.data.data || []);
+    } catch (err) {
+      console.error("Error cargando créditos:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const simular = async () => {
+    try {
+      setSimCargando(true);
+
+      const res = await api.post("/api/creditos/simular", {
+        monto: simMonto,
+        plazo_meses: simPlazo,
+        tasa_anual: 18.5,
+      });
+
+      setSimResultado(res.data.data);
+
+      const cronRes = await api.post("/api/creditos/cronograma", {
+        monto: simMonto,
+        plazo_meses: simPlazo,
+        tasa_anual: 18.5,
+      });
+
+      setCronograma(cronRes.data.data || []);
+    } catch (err) {
+      console.error("Error simulando:", err);
+    } finally {
+      setSimCargando(false);
+    }
+  };
+
+  useEffect(() => {
+    cargarSolicitudes();
+  }, [user]);
+
+  useEffect(() => {
+    simular();
+  }, [simMonto, simPlazo]);
 
   return (
-    <PageShell title="Créditos">
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', backgroundColor: '#fff', borderRadius: '8px', padding: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', width: 'fit-content' }}>
-        {[['activos', 'Préstamos activos'], ['simulador', 'Simulador'], ['solicitar', 'Solicitar crédito']].map(([key, label]) => (
-          <button key={key} onClick={() => setTab(key)} style={{ padding: '10px 20px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: 600, backgroundColor: tab === key ? '#004481' : 'transparent', color: tab === key ? '#fff' : '#555', transition: 'all 0.2s' }}>
-            {label}
-          </button>
-        ))}
+    <DashboardShell title="Créditos" nombreUsuario={nombreUsuario}>
+      <section className="mb-10">
+        <span className="text-[#1464A0] font-bold text-sm uppercase tracking-widest">
+          Financiamiento
+        </span>
+
+        <h1 className="text-5xl font-black text-[#072146] mt-2">
+          Créditos BBVA
+        </h1>
+
+        <p className="text-gray-500 text-xl mt-3">
+          Simula préstamos, revisa solicitudes y evalúa tus cuotas.
+        </p>
+      </section>
+
+      <div className="bg-white rounded-[28px] p-3 shadow-sm border border-gray-100 inline-flex gap-2 mb-8">
+        <TabButton active={tab === "activos"} onClick={() => setTab("activos")}>
+          Préstamos activos
+        </TabButton>
+
+        <TabButton active={tab === "simulador"} onClick={() => setTab("simulador")}>
+          Simulador
+        </TabButton>
+
+        <TabButton active={tab === "solicitar"} onClick={() => setTab("solicitar")}>
+          Solicitar crédito
+        </TabButton>
       </div>
 
-      {/* Activos */}
-      {tab === 'activos' && (
-        <div style={{ backgroundColor: '#fff', borderRadius: '8px', padding: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-            <div>
-              <h3 style={{ color: '#072146', fontWeight: 700, fontSize: '18px', margin: '0 0 4px' }}>Préstamo Personal</h3>
-              <p style={{ color: '#888', fontSize: '13px', margin: 0 }}>N° PE-2026-001</p>
+      {tab === "activos" && (
+        <section>
+          {loading ? (
+            <div className="bg-white rounded-[32px] p-12 text-center text-gray-500">
+              Cargando solicitudes...
             </div>
-            <span style={{ backgroundColor: '#e6f7ee', color: '#00a859', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 700 }}>Al día</span>
-          </div>
+          ) : solicitudes.length === 0 ? (
+            <div className="grid lg:grid-cols-[1.3fr_0.8fr] gap-8">
+              <div className="bg-white rounded-[32px] p-12 shadow-sm border border-gray-100 text-center">
+                <div className="w-24 h-24 rounded-full bg-[#eaf4ff] text-[#0726B4] flex items-center justify-center mx-auto mb-6">
+                  <FileText size={48} />
+                </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '20px' }}>
-            {[['Monto original', 'S/ 15,000'], ['Saldo pendiente', 'S/ 12,400'], ['Próxima cuota', 'S/ 650.00']].map(([lbl, val]) => (
-              <div key={lbl}>
-                <p style={{ fontSize: '12px', color: '#888', margin: '0 0 4px' }}>{lbl}</p>
-                <p style={{ fontSize: '20px', fontWeight: 700, color: '#072146', margin: 0 }}>{val}</p>
+                <h2 className="text-3xl font-black text-[#072146] mb-3">
+                  No tienes préstamos activos
+                </h2>
+
+                <p className="text-gray-500 text-lg mb-8">
+                  Usa el simulador para solicitar tu primer crédito.
+                </p>
+
+                <button
+                  onClick={() => setTab("simulador")}
+                  className="bg-[#0726B4] hover:bg-[#051D80] text-white px-10 py-5 rounded-2xl font-bold text-lg transition"
+                >
+                  Simular crédito
+                </button>
               </div>
-            ))}
-          </div>
 
-          <p style={{ fontSize: '13px', color: '#888', marginBottom: '20px' }}>Próximo vencimiento: <strong>10/06/2026</strong></p>
-
-          <h4 style={{ color: '#072146', fontWeight: 700, marginBottom: '12px' }}>Cronograma de pagos</h4>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#f5f5f5' }}>
-                {['Cuota', 'Fecha', 'Capital', 'Interés', 'Total', 'Estado'].map(h => (
-                  <th key={h} style={{ padding: '10px', textAlign: 'left', color: '#555', fontWeight: 600 }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {cronograma.map((row) => (
-                <tr key={row.cuota} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                  <td style={{ padding: '10px' }}>{row.cuota}</td>
-                  <td style={{ padding: '10px' }}>{row.fecha}</td>
-                  <td style={{ padding: '10px' }}>S/ {row.capital}</td>
-                  <td style={{ padding: '10px' }}>S/ {row.interes}</td>
-                  <td style={{ padding: '10px', fontWeight: 700 }}>S/ {row.total}</td>
-                  <td style={{ padding: '10px' }}>
-                    <span style={{ backgroundColor: '#fff3cd', color: '#856404', padding: '2px 8px', borderRadius: '12px', fontSize: '11px' }}>{row.estado}</span>
-                  </td>
-                </tr>
+              <CreditInfoCard />
+            </div>
+          ) : (
+            <div className="grid lg:grid-cols-2 gap-7">
+              {solicitudes.map((sol) => (
+                <SolicitudCard key={sol.id} sol={sol} />
               ))}
-            </tbody>
-          </table>
+            </div>
+          )}
+        </section>
+      )}
+
+      {tab === "simulador" && (
+        <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-8">
+          <section className="bg-white rounded-[32px] p-10 shadow-sm border border-gray-100">
+            <h2 className="text-3xl font-black text-[#072146] mb-8">
+              Simulador de crédito
+            </h2>
+
+            <RangeField
+              label="Monto del préstamo"
+              value={simMonto}
+              min={1000}
+              max={50000}
+              step={500}
+              prefix="S/"
+              onChange={(e) => setSimMonto(Number(e.target.value))}
+            />
+
+            <RangeField
+              label="Plazo"
+              value={simPlazo}
+              min={6}
+              max={60}
+              step={6}
+              suffix="meses"
+              onChange={(e) => setSimPlazo(Number(e.target.value))}
+            />
+
+            {simResultado && (
+              <div className="bg-[#f4f8ff] rounded-3xl p-6 mb-8 grid md:grid-cols-2 gap-5">
+                <ResultBox label="Cuota mensual" value={`S/ ${simResultado.cuota_mensual}`} />
+                <ResultBox label="Total a pagar" value={`S/ ${simResultado.total_pagar}`} />
+                <ResultBox label="Interés total" value={`S/ ${simResultado.total_interes}`} />
+                <ResultBox label="TEA referencial" value="18.5%" />
+              </div>
+            )}
+
+            <button
+              onClick={() => setTab("solicitar")}
+              className="w-full bg-[#0726B4] hover:bg-[#051D80] text-white py-5 rounded-2xl text-lg font-bold transition"
+            >
+              Solicitar este crédito
+            </button>
+          </section>
+
+          <section className="bg-[#072146] rounded-[32px] p-10 text-white h-fit">
+            <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center mb-6">
+              <Calculator size={32} />
+            </div>
+
+            <h2 className="text-3xl font-black mb-6">
+              Cronograma estimado
+            </h2>
+
+            {simCargando ? (
+              <p className="text-white/60">Calculando...</p>
+            ) : (
+              <div className="max-h-[420px] overflow-y-auto pr-2 space-y-3">
+                {cronograma.slice(0, 12).map((row) => (
+                  <div key={row.cuota} className="bg-white/10 rounded-2xl p-4">
+                    <div className="flex justify-between mb-1">
+                      <span className="text-white/60">Cuota {row.cuota}</span>
+                      <strong>S/ {row.total}</strong>
+                    </div>
+                    <p className="text-white/50 text-sm">
+                      Capital S/ {row.capital} · Interés S/ {row.interes}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
       )}
 
-      {/* Simulador */}
-      {tab === 'simulador' && (
-        <div style={{ backgroundColor: '#fff', borderRadius: '8px', padding: '32px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', maxWidth: '500px' }}>
-          <h3 style={{ color: '#072146', fontWeight: 700, marginBottom: '24px' }}>Simulador de crédito</h3>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={lbl}>Monto del préstamo: <strong>S/ {simMonto.toLocaleString()}</strong></label>
-            <input type="range" min="1000" max="50000" step="500" value={simMonto} onChange={e => setSimMonto(+e.target.value)} style={{ width: '100%', accentColor: '#004481' }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#aaa' }}><span>S/ 1,000</span><span>S/ 50,000</span></div>
-          </div>
-          <div style={{ marginBottom: '28px' }}>
-            <label style={lbl}>Plazo: <strong>{simPlazo} meses</strong></label>
-            <input type="range" min="6" max="60" step="6" value={simPlazo} onChange={e => setSimPlazo(+e.target.value)} style={{ width: '100%', accentColor: '#004481' }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#aaa' }}><span>6 meses</span><span>60 meses</span></div>
-          </div>
-          <div style={{ backgroundColor: '#f0f4ff', borderRadius: '8px', padding: '20px', textAlign: 'center', marginBottom: '20px' }}>
-            <p style={{ fontSize: '13px', color: '#555', margin: '0 0 4px' }}>Cuota mensual estimada</p>
-            <p style={{ fontSize: '36px', fontWeight: 800, color: '#004481', margin: '0 0 4px' }}>S/ {cuota}</p>
-            <p style={{ fontSize: '11px', color: '#888', margin: 0 }}>TEA 1.8% mensual • Tasa referencial</p>
-          </div>
-          <button onClick={() => setTab('solicitar')} style={{ width: '100%', backgroundColor: '#004481', color: '#fff', border: 'none', borderRadius: '4px', padding: '14px', fontSize: '15px', fontWeight: 700, cursor: 'pointer' }}>
-            Solicitar este crédito
-          </button>
-        </div>
+      {tab === "solicitar" && (
+        <SolicitarCredito
+          user={user}
+          simMonto={simMonto}
+          simPlazo={simPlazo}
+          onExito={async () => {
+            await cargarSolicitudes();
+            setTab("activos");
+          }}
+        />
       )}
-
-      {/* Solicitar */}
-      {tab === 'solicitar' && <SolicitarCredito />}
-    </PageShell>
-  )
+    </DashboardShell>
+  );
 }
 
-function SolicitarCredito() {
-  const [form, setForm] = useState({ monto: '', plazo: '12', motivo: '', ingresos: '' })
-  const [enviado, setEnviado] = useState(false)
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value })
+function SolicitarCredito({ user, simMonto, simPlazo, onExito }) {
+  const [form, setForm] = useState({
+    monto: simMonto,
+    plazo: simPlazo,
+    motivo: "consumo",
+    ingresos: "",
+  });
 
-  if (enviado) return (
-    <div style={{ backgroundColor: '#fff', borderRadius: '8px', padding: '48px', textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-      <div style={{ fontSize: '60px', marginBottom: '16px' }}>✅</div>
-      <h3 style={{ color: '#00a859', fontWeight: 700, fontSize: '22px', marginBottom: '8px' }}>¡Solicitud enviada!</h3>
-      <p style={{ color: '#555', marginBottom: '8px' }}>Tu solicitud está siendo evaluada. Te notificaremos por correo.</p>
-      <p style={{ color: '#888', fontSize: '13px' }}>Estado: <strong style={{ color: '#004481' }}>En evaluación</strong></p>
-    </div>
-  )
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [enviado, setEnviado] = useState(false);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const enviar = async () => {
+    if (!form.monto || !form.ingresos || !form.motivo) {
+      setError("Completa todos los campos.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await api.post("/api/creditos/solicitar", {
+        user_id: user.id,
+        monto: Number(form.monto),
+        plazo_meses: Number(form.plazo),
+        tasa_anual: 18.5,
+        proposito: form.motivo,
+        ingresos_mensuales: Number(form.ingresos),
+      });
+
+      if (response.data.success === false) {
+        setError(response.data.message || "No se pudo enviar la solicitud.");
+        return;
+      }
+
+      setEnviado(true);
+    } catch (err) {
+      console.error("Error solicitando crédito:", err);
+      setError("Error al enviar la solicitud.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (enviado) {
+    return (
+      <section className="bg-white rounded-[32px] p-12 shadow-sm border border-gray-100 text-center">
+        <div className="w-24 h-24 rounded-full bg-[#eaf4ff] text-[#0726B4] flex items-center justify-center mx-auto mb-6">
+          <CheckCircle size={56} />
+        </div>
+
+        <h2 className="text-4xl font-black text-[#072146] mb-4">
+          Solicitud enviada
+        </h2>
+
+        <p className="text-gray-500 text-lg mb-8">
+          Tu crédito está en evaluación.
+        </p>
+
+        <button
+          onClick={onExito}
+          className="bg-[#0726B4] hover:bg-[#051D80] text-white px-10 py-5 rounded-2xl font-bold"
+        >
+          Ver mis solicitudes
+        </button>
+      </section>
+    );
+  }
 
   return (
-    <div style={{ backgroundColor: '#fff', borderRadius: '8px', padding: '32px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', maxWidth: '500px' }}>
-      <h3 style={{ color: '#072146', fontWeight: 700, marginBottom: '24px' }}>Solicitar crédito</h3>
-      <label style={lbl}>Monto solicitado (S/)</label>
-      <input name="monto" placeholder="Ej: 5000" value={form.monto} onChange={handleChange} style={inp} />
-      <label style={lbl}>Plazo</label>
-      <select name="plazo" value={form.plazo} onChange={handleChange} style={inp}>
-        {[6,12,18,24,36,48,60].map(p => <option key={p} value={p}>{p} meses</option>)}
-      </select>
-      <label style={lbl}>Ingresos mensuales (S/)</label>
-      <input name="ingresos" placeholder="Ej: 3000" value={form.ingresos} onChange={handleChange} style={inp} />
-      <label style={lbl}>Motivo del crédito</label>
-      <select name="motivo" value={form.motivo} onChange={handleChange} style={inp}>
-        <option value="">Selecciona un motivo</option>
-        <option>Educación</option><option>Salud</option><option>Viaje</option><option>Negocio</option><option>Otro</option>
-      </select>
-      <button
-        onClick={() => form.monto && form.ingresos && form.motivo && setEnviado(true)}
-        style={{ width: '100%', backgroundColor: '#004481', color: '#fff', border: 'none', borderRadius: '4px', padding: '14px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', marginTop: '8px' }}
-      >
-        Enviar solicitud
-      </button>
+    <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-8">
+      <section className="bg-white rounded-[32px] p-10 shadow-sm border border-gray-100">
+        <h2 className="text-3xl font-black text-[#072146] mb-8">
+          Solicitar crédito
+        </h2>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 mb-6">
+            {error}
+          </div>
+        )}
+
+        <InputLabel label="Monto solicitado">
+          <input
+            name="monto"
+            type="number"
+            value={form.monto}
+            onChange={handleChange}
+            className="input-bbva"
+            placeholder="Ej: 5000"
+          />
+        </InputLabel>
+
+        <InputLabel label="Plazo">
+          <select name="plazo" value={form.plazo} onChange={handleChange} className="input-bbva">
+            {[6, 12, 18, 24, 36, 48, 60].map((p) => (
+              <option key={p} value={p}>
+                {p} meses
+              </option>
+            ))}
+          </select>
+        </InputLabel>
+
+        <InputLabel label="Ingresos mensuales">
+          <input
+            name="ingresos"
+            type="number"
+            value={form.ingresos}
+            onChange={handleChange}
+            className="input-bbva"
+            placeholder="Ej: 3000"
+          />
+        </InputLabel>
+
+        <InputLabel label="Propósito del crédito">
+          <select name="motivo" value={form.motivo} onChange={handleChange} className="input-bbva">
+            <option value="consumo">Consumo</option>
+            <option value="educacion">Educación</option>
+            <option value="salud">Salud</option>
+            <option value="vivienda">Vivienda</option>
+            <option value="negocio">Negocio</option>
+          </select>
+        </InputLabel>
+
+        <button
+          onClick={enviar}
+          disabled={loading}
+          className="w-full bg-[#0726B4] hover:bg-[#051D80] disabled:bg-gray-300 text-white py-5 rounded-2xl text-lg font-bold transition"
+        >
+          {loading ? "Enviando..." : "Enviar solicitud"}
+        </button>
+      </section>
+
+      <section className="bg-white rounded-[32px] p-10 shadow-sm border border-gray-100">
+        <h3 className="text-3xl font-black text-[#072146] mb-6">
+          Revisión rápida
+        </h3>
+
+        <div className="space-y-5">
+          <Step icon={CheckCircle} text="Registramos tu solicitud." />
+          <Step icon={Clock} text="Tu solicitud queda en estado pendiente." />
+          <Step icon={ShieldCheck} text="Podrás verla en préstamos activos." />
+        </div>
+      </section>
     </div>
-  )
+  );
 }
 
-const inp = { width: '100%', padding: '12px 16px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', color: '#333', boxSizing: 'border-box', marginBottom: '16px', outline: 'none', backgroundColor: '#fff' }
-const lbl = { display: 'block', fontSize: '12px', color: '#555', marginBottom: '6px' }
+function SolicitudCard({ sol }) {
+  return (
+    <article className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100">
+      <div className="flex justify-between gap-5 mb-8">
+        <div>
+          <p className="text-[#1464A0] text-sm font-bold uppercase tracking-widest mb-2">
+            Préstamo personal
+          </p>
+
+          <h3 className="text-2xl font-black text-[#072146]">
+            Solicitud #{sol.id.slice(0, 8).toUpperCase()}
+          </h3>
+        </div>
+
+        <span className="bg-[#fff4d6] text-[#8a6500] text-xs font-bold px-4 py-2 rounded-full h-fit capitalize">
+          {sol.estado}
+        </span>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-4 mb-6">
+        <ResultBox label="Monto" value={`S/ ${Number(sol.monto).toFixed(2)}`} />
+        <ResultBox label="Plazo" value={`${sol.plazo_meses} meses`} />
+        <ResultBox label="Cuota" value={`S/ ${Number(sol.cuota_mensual).toFixed(2)}`} />
+      </div>
+
+      <p className="text-gray-500">
+        Propósito: <strong>{sol.proposito || "consumo"}</strong>
+      </p>
+    </article>
+  );
+}
+
+function TabButton({ active, onClick, children }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-7 py-4 rounded-2xl font-bold transition ${
+        active ? "bg-[#0726B4] text-white" : "text-[#072146] hover:bg-[#f4f8ff]"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function CreditInfoCard() {
+  return (
+    <aside className="bg-[#072146] rounded-[32px] p-10 text-white">
+      <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center mb-6">
+        <CreditCard size={32} />
+      </div>
+
+      <h2 className="text-3xl font-black mb-4">
+        Crédito personal BBVA
+      </h2>
+
+      <p className="text-white/70 leading-relaxed mb-8">
+        Simula cuotas y registra solicitudes de préstamo desde tu banca.
+      </p>
+
+      <div className="bg-white/10 rounded-2xl p-5">
+        <p className="text-white/50 text-sm mb-1">Tasa referencial</p>
+        <p className="text-3xl font-black">18.5% anual</p>
+      </div>
+    </aside>
+  );
+}
+
+function RangeField({ label, value, min, max, step, prefix = "", suffix = "", onChange }) {
+  return (
+    <label className="block mb-8">
+      <div className="flex justify-between mb-3">
+        <span className="text-[#072146] font-bold">{label}</span>
+        <span className="text-[#072146] font-black">
+          {prefix} {Number(value).toLocaleString()} {suffix}
+        </span>
+      </div>
+
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={onChange}
+        className="w-full accent-[#0726B4]"
+      />
+    </label>
+  );
+}
+
+function ResultBox({ label, value }) {
+  return (
+    <div className="bg-[#f7f8fa] rounded-2xl p-5">
+      <p className="text-gray-500 text-sm mb-1">{label}</p>
+      <p className="text-[#072146] font-black text-xl">{value}</p>
+    </div>
+  );
+}
+
+function InputLabel({ label, children }) {
+  return (
+    <label className="block mb-6">
+      <span className="block text-[#072146] font-bold mb-2">{label}</span>
+      {children}
+    </label>
+  );
+}
+
+function Step({ icon: Icon, text }) {
+  return (
+    <div className="bg-[#f4f8ff] rounded-2xl p-5 flex gap-4 items-start">
+      <div className="w-10 h-10 rounded-xl bg-[#eaf4ff] text-[#0726B4] flex items-center justify-center shrink-0">
+        <Icon size={22} />
+      </div>
+
+      <p className="text-[#072146] font-bold">{text}</p>
+    </div>
+  );
+}

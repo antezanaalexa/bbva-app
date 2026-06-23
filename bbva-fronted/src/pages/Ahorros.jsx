@@ -1,69 +1,214 @@
-import { Download } from 'lucide-react'
-import PageShell from '../layouts/PageShell'
+import { useEffect, useState } from "react";
+import { Download, ArrowDownLeft, ArrowUpRight, FileText, Wallet } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import api from "../services/api";
+import DashboardShell from "../components/dashboard/DashboardShell";
+
+const simbolo = {
+  PEN: "S/",
+  USD: "US$",
+};
+
+const monedaLabel = {
+  PEN: "Soles",
+  USD: "Dólares",
+};
 
 export default function Ahorros() {
-  const movimientos = [
-    { id: 1, descripcion: 'Transferencia recibida - Juan Pérez', fecha: '12/05/2026', monto: +500.00, tipo: 'ingreso' },
-    { id: 2, descripcion: 'Pago servicios - Luz del Sur', fecha: '11/05/2026', monto: -89.50, tipo: 'egreso' },
-    { id: 3, descripcion: 'Compra - Plaza Vea', fecha: '10/05/2026', monto: -230.00, tipo: 'egreso' },
-    { id: 4, descripcion: 'Depósito en efectivo', fecha: '09/05/2026', monto: +1000.00, tipo: 'ingreso' },
-    { id: 5, descripcion: 'Pago BBVA - Tarjeta crédito', fecha: '08/05/2026', monto: -350.00, tipo: 'egreso' },
-    { id: 6, descripcion: 'Abono sueldo - Empresa SAC', fecha: '07/05/2026', monto: +2500.00, tipo: 'ingreso' },
-  ]
+  const { user } = useAuth();
+
+  const [cuentas, setCuentas] = useState([]);
+  const [movimientos, setMovimientos] = useState([]);
+  const [cuentaSeleccionada, setCuentaSeleccionada] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const nombreUsuario =
+    user?.user_metadata?.nombres || user?.email?.split("@")[0] || "Cliente";
+
+  useEffect(() => {
+    const cargarDatos = async () => {
+      if (!user) return;
+
+      try {
+        setLoading(true);
+
+        const cuentasRes = await api.get(`/api/cuentas/${user.id}`);
+        const cuentasData = cuentasRes.data.data || [];
+
+        setCuentas(cuentasData);
+
+        if (cuentasData.length > 0) {
+          setCuentaSeleccionada(cuentasData[0].id);
+        }
+
+        const movimientosRes = await api.get(`/api/transacciones/${user.id}`);
+        setMovimientos(movimientosRes.data.data || []);
+      } catch (error) {
+        console.error("Error cargando ahorros:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarDatos();
+  }, [user]);
+
+  const cuentaActual = cuentas.find((c) => c.id === cuentaSeleccionada);
+
+  const movimientosCuenta = movimientos.filter(
+    (m) => m.cuenta_id === cuentaSeleccionada
+  );
 
   return (
-    <PageShell title="Mis Ahorros">
-      {/* Saldo */}
-      <div style={{ backgroundColor: '#004481', borderRadius: '12px', padding: '28px', color: '#fff', marginBottom: '24px' }}>
-        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', marginBottom: '4px' }}>Cuenta de Ahorros • 0011-0816-01-00123456</p>
-        <p style={{ fontSize: '36px', fontWeight: 700, margin: '8px 0' }}>S/ 3,250.80</p>
-        <div style={{ display: 'flex', gap: '32px', marginTop: '16px' }}>
-          <div>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', margin: '0 0 2px' }}>Saldo contable</p>
-            <p style={{ fontSize: '16px', fontWeight: 600, margin: 0 }}>S/ 3,250.80</p>
-          </div>
-          <div>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', margin: '0 0 2px' }}>Tasa de interés</p>
-            <p style={{ fontSize: '16px', fontWeight: 600, margin: 0 }}>1.50% anual</p>
-          </div>
+    <DashboardShell title="Mis Ahorros" nombreUsuario={nombreUsuario}>
+      <section className="mb-10">
+        <span className="text-[#1464A0] font-bold text-sm uppercase tracking-widest">
+          Productos de ahorro
+        </span>
+
+        <h1 className="text-5xl font-black text-[#072146] mt-2">
+          Mis ahorros
+        </h1>
+
+        <p className="text-gray-500 text-xl mt-3">
+          Consulta tus cuentas, saldos y últimos movimientos.
+        </p>
+      </section>
+
+      {loading ? (
+        <div className="bg-white rounded-[32px] p-12 text-center text-gray-500">
+          Cargando tus cuentas...
         </div>
-      </div>
+      ) : cuentas.length === 0 ? (
+        <div className="bg-white rounded-[32px] p-12 text-center">
+          <Wallet size={48} className="mx-auto text-[#0726B4] mb-4" />
 
-      {/* Acciones */}
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
-        {[['📤', 'Transferir'], ['📥', 'Depositar'], ['📄', 'Estado cuenta'], ['⬇️', 'Descargar']].map(([ico, lbl]) => (
-          <button key={lbl} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '16px 20px', backgroundColor: '#fff', border: '1px solid #e0e0e0', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', color: '#004481', fontWeight: 600, minWidth: '80px' }}>
-            <span style={{ fontSize: '22px' }}>{ico}</span>{lbl}
-          </button>
-        ))}
-      </div>
+          <h2 className="text-3xl font-black text-[#072146] mb-3">
+            No tienes cuentas de ahorro
+          </h2>
 
-      {/* Movimientos */}
-      <div style={{ backgroundColor: '#fff', borderRadius: '8px', padding: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ color: '#072146', fontSize: '18px', fontWeight: 700, margin: 0 }}>Estado de cuenta</h2>
-          <button style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#004481', color: '#fff', border: 'none', borderRadius: '4px', padding: '8px 16px', fontSize: '13px', cursor: 'pointer', fontWeight: 600 }}>
-            <Download size={14} /> Descargar PDF
-          </button>
+          <p className="text-gray-500">
+            Abre una cuenta para empezar a ahorrar con BBVA.
+          </p>
         </div>
-
-        {movimientos.map((mov) => (
-          <div key={mov.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid #f0f0f0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: mov.tipo === 'ingreso' ? '#e6f7ee' : '#ffeaea', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>
-                {mov.tipo === 'ingreso' ? '↓' : '↑'}
-              </div>
+      ) : (
+        <>
+          <section className="bg-[#072146] rounded-[32px] p-10 text-white mb-8">
+            <div className="flex flex-wrap justify-between gap-8">
               <div>
-                <p style={{ margin: '0 0 2px', fontSize: '14px', fontWeight: 500, color: '#333' }}>{mov.descripcion}</p>
-                <p style={{ margin: 0, fontSize: '12px', color: '#888' }}>{mov.fecha}</p>
+                <p className="text-white/60 text-sm uppercase tracking-widest mb-2">
+                  Cuenta seleccionada
+                </p>
+
+                <select
+                  value={cuentaSeleccionada}
+                  onChange={(e) => setCuentaSeleccionada(e.target.value)}
+                  className="bg-white text-[#072146] rounded-2xl px-5 py-4 font-bold outline-none mb-8"
+                >
+                  {cuentas.map((cuenta) => (
+                    <option key={cuenta.id} value={cuenta.id}>
+                      {cuenta.tipo_cuenta || "Cuenta BBVA"} -{" "}
+                      {monedaLabel[cuenta.moneda] || cuenta.moneda}
+                    </option>
+                  ))}
+                </select>
+
+                <h2 className="text-5xl font-black">
+                  {simbolo[cuentaActual?.moneda] || "S/"}{" "}
+                  {Number(cuentaActual?.saldo || 0).toFixed(2)}
+                </h2>
+
+                <p className="text-white/60 mt-2">
+                  Saldo disponible
+                </p>
+              </div>
+
+              <div className="bg-white/10 rounded-3xl p-6 min-w-[280px]">
+                <Info label="Número de cuenta" value={cuentaActual?.numero_cuenta} />
+                <Info label="CCI" value={cuentaActual?.cci || "No registrado"} />
+                <Info label="Moneda" value={monedaLabel[cuentaActual?.moneda]} />
               </div>
             </div>
-            <span style={{ fontWeight: 700, fontSize: '15px', color: mov.tipo === 'ingreso' ? '#00a859' : '#cc0000' }}>
-              {mov.tipo === 'ingreso' ? '+' : ''}S/ {Math.abs(mov.monto).toFixed(2)}
-            </span>
-          </div>
-        ))}
+          </section>
+
+          <section className="grid md:grid-cols-4 gap-5 mb-8">
+            <ActionCard icon={ArrowUpRight} title="Transferir" />
+            <ActionCard icon={ArrowDownLeft} title="Depositar" />
+            <ActionCard icon={FileText} title="Estado de cuenta" />
+            <ActionCard icon={Download} title="Descargar" />
+          </section>
+
+          <section className="bg-white rounded-[32px] p-10 shadow-sm border border-gray-100">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-black text-[#072146]">
+                Estado de cuenta
+              </h2>
+
+              <button className="bg-[#0726B4] hover:bg-[#051D80] text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 transition">
+                <Download size={18} />
+                Descargar PDF
+              </button>
+            </div>
+
+            {movimientosCuenta.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="text-5xl mb-4">📭</div>
+
+                <p className="text-[#072146] font-bold text-xl">
+                  No hay movimientos en esta cuenta
+                </p>
+
+                <p className="text-gray-500 mt-2">
+                  Cuando realices operaciones aparecerán aquí.
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-100">
+                {movimientosCuenta.map((mov) => (
+                  <div key={mov.id} className="py-5 flex justify-between gap-6">
+                    <div>
+                      <p className="text-[#072146] font-bold">
+                        {mov.descripcion}
+                      </p>
+
+                      <p className="text-gray-400 text-sm">
+                        {new Date(mov.fecha).toLocaleDateString("es-PE")}
+                      </p>
+                    </div>
+
+                    <p className="font-black text-[#072146]">
+                      {mov.tipo === "credito" ? "+" : "-"}
+                      {simbolo[cuentaActual?.moneda] || "S/"}{" "}
+                      {Math.abs(Number(mov.monto)).toFixed(2)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </>
+      )}
+    </DashboardShell>
+  );
+}
+
+function Info({ label, value }) {
+  return (
+    <div className="mb-5 last:mb-0">
+      <p className="text-white/50 text-sm mb-1">{label}</p>
+      <p className="text-white font-bold break-all">{value || "---"}</p>
+    </div>
+  );
+}
+
+function ActionCard({ icon: Icon, title }) {
+  return (
+    <button className="bg-white hover:bg-[#f4f8ff] rounded-[24px] p-6 shadow-sm border border-gray-100 transition text-left">
+      <div className="w-12 h-12 rounded-2xl bg-[#eaf4ff] text-[#0726B4] flex items-center justify-center mb-5">
+        <Icon size={24} />
       </div>
-    </PageShell>
-  )
+
+      <p className="text-[#072146] font-black">{title}</p>
+    </button>
+  );
 }
