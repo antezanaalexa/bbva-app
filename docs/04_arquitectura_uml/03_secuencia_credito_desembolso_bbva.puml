@@ -1,0 +1,68 @@
+@startuml
+title Diagrama de Secuencia - Solicitud, Aprobación y Desembolso
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #0726B4
+  LifeLineBorderColor #072146
+  LifeLineBackgroundColor #EAF4FF
+  ParticipantBorderColor #072146
+  ParticipantBackgroundColor #F7F8FA
+  ParticipantFontColor #072146
+  ActorBorderColor #072146
+  ActorBackgroundColor #EAF4FF
+}
+
+actor Cliente
+participant "Homebanking Frontend\nReact :5173" as HBFront
+participant "Homebanking Backend\nFastAPI :8000" as HBApi
+database "PostgreSQL\nbd_core_financiero" as DB
+participant "Core Frontend\nReact :5174" as CoreFront
+participant "Core Backend\nFastAPI :8001" as CoreApi
+actor "Usuario Core" as UsuarioCore
+
+Cliente -> HBFront : Ingresa monto, plazo, ingresos y propósito
+HBFront -> HBApi : POST /api/creditos/solicitar
+HBApi -> HBApi : Calcula cuota mensual
+HBApi -> HBApi : Calcula RDS = cuota / ingresos * 100
+HBApi -> HBApi : Calcula score, semáforo y nivel
+HBApi -> DB : INSERT INTO solicitudes_prestamo\nestado = 'pendiente'
+DB --> HBApi : Solicitud registrada
+HBApi --> HBFront : Respuesta exitosa
+HBFront --> Cliente : Muestra solicitud enviada
+
+UsuarioCore -> CoreFront : Inicia sesión en Core
+CoreFront -> CoreApi : GET /api/core/solicitudes
+CoreApi -> DB : SELECT solicitudes_prestamo + app_usuarios
+DB --> CoreApi : Lista de solicitudes pendientes
+CoreApi --> CoreFront : Bandeja de solicitudes
+
+UsuarioCore -> CoreFront : Abre detalle de solicitud
+CoreFront -> CoreApi : GET /api/core/solicitudes/{id}
+CoreApi -> DB : SELECT detalle de solicitud
+DB --> CoreApi : Datos del cliente y evaluación
+CoreApi --> CoreFront : Muestra RDS, score, semáforo y nivel
+
+UsuarioCore -> CoreFront : Aprueba solicitud
+CoreFront -> CoreApi : POST /api/core/solicitudes/{id}/aprobar
+CoreApi -> DB : UPDATE solicitudes_prestamo\nSET estado = 'aprobado'
+DB --> CoreApi : Estado actualizado
+CoreApi --> CoreFront : Confirmación
+
+UsuarioCore -> CoreFront : Ejecuta desembolso
+CoreFront -> CoreApi : POST /api/core/solicitudes/{id}/desembolsar
+CoreApi -> DB : UPDATE cuentas\nSET saldo = saldo + monto
+CoreApi -> DB : INSERT INTO transacciones\ntipo = 'credito'
+CoreApi -> DB : UPDATE solicitudes_prestamo\nSET estado = 'desembolsado'
+DB --> CoreApi : Desembolso registrado
+CoreApi --> CoreFront : Confirmación de desembolso
+
+Cliente -> HBFront : Consulta dashboard
+HBFront -> HBApi : GET /api/cuentas/{user_id}
+HBApi -> DB : SELECT cuentas actualizadas
+DB --> HBApi : Saldo actualizado
+HBApi --> HBFront : Cuentas y movimientos
+HBFront --> Cliente : Visualiza saldo incrementado
+
+@enduml

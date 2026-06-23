@@ -1,0 +1,44 @@
+@startuml
+title Diagrama de Estados - Recuperaciones y Mora BBVA
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+
+skinparam state {
+  BackgroundColor #F7F8FA
+  BorderColor #072146
+  FontColor #072146
+}
+
+[*] --> AlDia : Crédito desembolsado
+
+AlDia --> Preventiva : 1 día de atraso
+Preventiva --> Temprana : 7 días de atraso
+Temprana --> Tardia : 31 días de atraso
+
+state "Gestión de Cobranza" as Cobranza {
+  Preventiva --> Preventiva : Registrar llamada
+  Temprana --> Temprana : Registrar visita / compromiso
+  Tardia --> Tardia : Registrar gestión intensiva
+}
+
+Preventiva --> AlDia : Pago de cuota vencida
+Temprana --> AlDia : Pago de cuota vencida
+Tardia --> AlDia : Pago / refinanciación
+
+Tardia --> Judicial : >= 121 días de atraso\nDerivación autorizada
+Judicial --> Castigado : > 180 días de atraso\nCastigo contable
+
+Castigado --> [*] : Crédito dado de baja contable
+
+note right of Judicial
+La transición a judicial requiere
+validación de días de atraso y rol autorizado.
+end note
+
+note right of Castigado
+El castigo contable solo aplica
+cuando el atraso supera 180 días.
+end note
+
+@enduml

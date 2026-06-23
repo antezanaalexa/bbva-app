@@ -1,0 +1,46 @@
+@startuml
+title Diagrama de Despliegue Local - BBVA Perú Simulado
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam node {
+  BackgroundColor #F7F8FA
+  BorderColor #072146
+  FontColor #072146
+}
+skinparam database {
+  BackgroundColor #EAF4FF
+  BorderColor #0726B4
+  FontColor #072146
+}
+
+node "Equipo Local Windows" as PC {
+  
+  node "Navegador Web" as Browser {
+    artifact "Homebanking\nhttp://localhost:5173" as HBWeb
+    artifact "Core Bancario\nhttp://localhost:5174" as CoreWeb
+  }
+
+  node "Servidor FastAPI Homebanking" as HBServer {
+    artifact "bbva-backend\nPuerto 8000" as HBBackend
+  }
+
+  node "Servidor FastAPI Core" as CoreServer {
+    artifact "core-backend\nPuerto 8001" as CoreBackend
+  }
+
+  database "PostgreSQL Local\nbd_core_financiero\nPuerto 5432" as DB
+}
+
+HBWeb --> HBBackend : HTTP / API REST
+CoreWeb --> CoreBackend : HTTP / API REST
+
+HBBackend --> DB : conexión PostgreSQL
+CoreBackend --> DB : conexión PostgreSQL
+
+note bottom of DB
+Base de datos única compartida
+por ambos sistemas.
+end note
+
+@enduml

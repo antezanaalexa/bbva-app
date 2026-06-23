@@ -17,32 +17,22 @@ const chips = (arr) => (
   </div>
 )
 
-// Flor multicolor (colores del logo) usada como decoración del login.
-const PETALOS = [
-  { a: 0, c: '#e6398b' },
-  { a: 60, c: '#f7941e' },
-  { a: 120, c: '#fbc02d' },
-  { a: 180, c: '#4caf50' },
-  { a: 240, c: '#00a9a5' },
-  { a: 300, c: '#8e24aa' },
-]
-const Flor = ({ className }) => (
-  <svg className={className} viewBox="0 0 200 200" aria-hidden="true">
-    {PETALOS.map((p) => (
-      <ellipse key={p.a} cx="100" cy="50" rx="28" ry="52" fill={p.c} transform={`rotate(${p.a} 100 100)`} />
-    ))}
-    <circle cx="100" cy="100" r="34" fill="#fbc02d" />
-    <circle cx="100" cy="100" r="17" fill="#e2132b" />
-  </svg>
-)
+// Colores Corporativos BBVA
+const bbvaColors = {
+  navy: '#072146',
+  core: '#004481',
+  light: '#1973B8',
+  aqua: '#2DBEEF'
+}
+
 
 // Mensaje del día — destellos
 const SvgMensaje = (
   <svg className="carrusel__svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice">
     <defs>
       <linearGradient id="g-msg" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#e6398b" />
-        <stop offset="1" stopColor="#e2132b" />
+        <stop offset="0" stopColor={bbvaColors.navy} />
+        <stop offset="1" stopColor={bbvaColors.core} />
       </linearGradient>
     </defs>
     <rect width="1000" height="640" fill="url(#g-msg)" />
@@ -60,8 +50,8 @@ const SvgMision = (
   <svg className="carrusel__svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice">
     <defs>
       <linearGradient id="g-mis" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#e2132b" />
-        <stop offset="1" stopColor="#f7941e" />
+        <stop offset="0" stopColor={bbvaColors.core} />
+        <stop offset="1" stopColor={bbvaColors.light} />
       </linearGradient>
     </defs>
     <rect width="1000" height="640" fill="url(#g-mis)" />
@@ -81,8 +71,8 @@ const SvgVision = (
   <svg className="carrusel__svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice">
     <defs>
       <linearGradient id="g-vis" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#00a9a5" />
-        <stop offset="1" stopColor="#0d3b66" />
+        <stop offset="0" stopColor={bbvaColors.light} />
+        <stop offset="1" stopColor={bbvaColors.aqua} />
       </linearGradient>
     </defs>
     <rect width="1000" height="640" fill="url(#g-vis)" />
@@ -101,8 +91,8 @@ const SvgValores = (
   <svg className="carrusel__svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice">
     <defs>
       <linearGradient id="g-val" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#8e24aa" />
-        <stop offset="1" stopColor="#e6398b" />
+        <stop offset="0" stopColor={bbvaColors.navy} />
+        <stop offset="1" stopColor={bbvaColors.light} />
       </linearGradient>
     </defs>
     <rect width="1000" height="640" fill="url(#g-val)" />
@@ -120,8 +110,8 @@ const SvgLavado = (
   <svg className="carrusel__svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice">
     <defs>
       <linearGradient id="g-lav" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#0d3b66" />
-        <stop offset="1" stopColor="#00a9a5" />
+        <stop offset="0" stopColor={bbvaColors.core} />
+        <stop offset="1" stopColor={bbvaColors.navy} />
       </linearGradient>
     </defs>
     <rect width="1000" height="640" fill="url(#g-lav)" />
@@ -137,9 +127,9 @@ const SvgPadre = (
   <svg className="carrusel__svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice">
     <defs>
       <linearGradient id="g-pad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#8e24aa" />
-        <stop offset="0.55" stopColor="#e2132b" />
-        <stop offset="1" stopColor="#f7941e" />
+        <stop offset="0" stopColor={bbvaColors.light} />
+        <stop offset="0.55" stopColor={bbvaColors.core} />
+        <stop offset="1" stopColor={bbvaColors.navy} />
       </linearGradient>
     </defs>
     <rect width="1000" height="640" fill="url(#g-pad)" />
@@ -159,8 +149,8 @@ const SvgBandera = (
   <svg className="carrusel__svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice">
     <defs>
       <linearGradient id="g-ban" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#7a0d18" />
-        <stop offset="1" stopColor="#b50f22" />
+        <stop offset="0" stopColor={bbvaColors.navy} />
+        <stop offset="1" stopColor={bbvaColors.aqua} />
       </linearGradient>
     </defs>
     <rect width="1000" height="640" fill="url(#g-ban)" />
@@ -179,8 +169,8 @@ const SvgMetas = (
   <svg className="carrusel__svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice">
     <defs>
       <linearGradient id="g-met" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#1d7874" />
-        <stop offset="1" stopColor="#4caf50" />
+        <stop offset="0" stopColor={bbvaColors.core} />
+        <stop offset="1" stopColor={bbvaColors.aqua} />
       </linearGradient>
     </defs>
     <rect width="1000" height="640" fill="url(#g-met)" />
@@ -208,7 +198,57 @@ const fraseDelDia = FRASES_DIA[new Date().getDay()]
 
 const VALORES = ['Integridad', 'Compromiso', 'Trabajo en equipo', 'Innovación', 'Cercanía', 'Responsabilidad']
 
+// Imagen del premio ESG BBVA Perú
+const ImageEsg = (
+  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #072146 0%, #004481 100%)', position: 'relative' }}>
+    <img 
+      src="/assets/premio-esg.avif" 
+      alt="Premio ESG BBVA Perú" 
+      style={{ 
+        width: '100%', 
+        height: '100%', 
+        objectFit: 'cover', 
+        opacity: 0.28,
+        mixBlendMode: 'overlay',
+        filter: 'contrast(1.1) brightness(0.9)'
+      }} 
+    />
+  </div>
+)
+
+// Imagen de Tarjeta de Crédito BBVA
+const ImageTarjeta = (
+  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #072146 0%, #004481 100%)', position: 'relative' }}>
+    <img 
+      src="/assets/tarjeta-bg.avif" 
+      alt="Tarjeta de Crédito BBVA" 
+      style={{ 
+        width: '100%', 
+        height: '100%', 
+        objectFit: 'cover', 
+        opacity: 0.25,
+        mixBlendMode: 'overlay',
+        filter: 'contrast(1.1) brightness(0.9)'
+      }} 
+    />
+  </div>
+)
+
 const SLIDES = [
+  {
+    badge: 'Core Bancario',
+    titulo: 'Gestión de Portafolio',
+    subtitulo: 'Accede a la visión integral de la cartera de clientes, monitorea métricas en tiempo real y gestiona riesgos eficientemente.',
+    svg: ImageEsg,
+    extra: chips(['Riesgos', 'Rentabilidad', 'Métricas']),
+  },
+  {
+    badge: 'Operaciones',
+    titulo: 'Evaluación de Créditos',
+    subtitulo: 'Herramientas avanzadas de scoring para decisiones de crédito rápidas y basadas en datos confiables.',
+    svg: ImageTarjeta,
+    extra: chips(['Scoring', 'Eficiencia', 'Datos']),
+  },
   {
     badge: 'Mensaje del día',
     titulo: 'Hoy es un buen día',
@@ -239,27 +279,27 @@ const SLIDES = [
     extra: chips(VALORES),
   },
   {
-    badge: 'Hoy',
-    titulo: 'Capacitación: Prevención de Lavado de Activos',
-    subtitulo: 'Sesión obligatoria para asesores y administradores. Revisa tu correo institucional.',
+    badge: 'Seguridad',
+    titulo: 'Actualización Normativa',
+    subtitulo: 'Nuevos protocolos de prevención y control de riesgos operativos. Revisa la documentación en el portal.',
     svg: SvgLavado,
   },
   {
-    badge: 'Campaña',
-    titulo: 'Campaña Día del Padre',
-    subtitulo: 'Impulsa los créditos de consumo y microempresa durante todo junio.',
+    badge: 'Despliegue',
+    titulo: 'Nueva versión del Core',
+    subtitulo: 'Se han implementado mejoras en la velocidad de respuesta de las consultas de saldo.',
     svg: SvgPadre,
   },
   {
-    badge: 'Junio',
-    titulo: 'Junio, Mes de la Bandera',
-    subtitulo: 'Orgullosos de servir al Perú emprendedor. ¡Feliz mes patrio!',
+    badge: 'Infraestructura',
+    titulo: 'Alta Disponibilidad',
+    subtitulo: 'Sistemas redundantes para asegurar que las operaciones financieras no se detengan.',
     svg: SvgBandera,
   },
   {
-    badge: 'Productividad',
-    titulo: 'Metas del mes',
-    subtitulo: 'Revisa tu avance de colocaciones y cumplimiento en el dashboard.',
+    badge: 'Monitorización',
+    titulo: 'Panel de Control Operativo',
+    subtitulo: 'Revisa el estado de los servicios en tiempo real desde el dashboard.',
     svg: SvgMetas,
   },
 ]
@@ -294,8 +334,6 @@ export default function HomePage() {
 
         {/* ───────── Derecha: login ───────── */}
         <aside className="split-login">
-          <Flor className="split-login__flor split-login__flor--1" />
-          <Flor className="split-login__flor split-login__flor--2" />
           <div className="split-login__inner">
             <span className="split-login__secure">
               <ShieldCheck size={14} strokeWidth={2.6} /> Conexión segura

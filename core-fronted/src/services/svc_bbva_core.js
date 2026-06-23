@@ -2,32 +2,32 @@ import api from './svc_api.js'
 
 export const bbvaCoreService = {
   getKpis: async () => {
-    const res = await api.get('/core/dashboard/kpis')
+    const res = await api.get('/api/core/dashboard/kpis')
     return res.data
   },
 
   getSolicitudes: async () => {
-    const res = await api.get('/core/solicitudes')
+    const res = await api.get('/api/core/solicitudes')
     return res.data
   },
 
   getSolicitudById: async (id) => {
-    const res = await api.get(`/core/solicitudes/${id}`)
+    const res = await api.get(`/api/core/solicitudes/${id}`)
     return res.data
   },
 
   aprobar: async (id) => {
-    const res = await api.post(`/core/solicitudes/${id}/aprobar`)
+    const res = await api.post(`/api/core/solicitudes/${id}/aprobar`)
     return res.data
   },
 
   rechazar: async (id) => {
-    const res = await api.post(`/core/solicitudes/${id}/rechazar`)
+    const res = await api.post(`/api/core/solicitudes/${id}/rechazar`)
     return res.data
   },
 
   desembolsar: async (id) => {
-    const res = await api.post(`/core/solicitudes/${id}/desembolsar`)
+    const res = await api.post(`/api/core/solicitudes/${id}/desembolsar`)
     return res.data
   }
 }

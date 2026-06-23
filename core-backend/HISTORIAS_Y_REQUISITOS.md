@@ -1,4 +1,4 @@
-# Historias de Usuario y Requisitos Funcionales — Core Banco Andino
+# Historias de Usuario y Requisitos Funcionales — Core BBVA
 
 > Convención: **HU** = Historia de Usuario, **RF** = Requisito Funcional.
 > Estado: ✅ implementado · 🟡 parcial · ⬜ pendiente.

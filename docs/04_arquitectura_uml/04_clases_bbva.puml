@@ -1,0 +1,118 @@
+@startuml
+title Diagrama de Clases - Modelo de Dominio BBVA Perú Simulado
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam class {
+  BackgroundColor #F7F8FA
+  BorderColor #072146
+  FontColor #072146
+  AttributeFontColor #374151
+}
+
+class UsuarioApp {
+  +id: int
+  +dni: string
+  +nombres: string
+  +apellidos: string
+  +correo: string
+  +password_hash: string
+  +rol: string
+  +estado: string
+  +fecha_registro: datetime
+}
+
+class Cuenta {
+  +id: uuid
+  +user_id: int
+  +tipo: string
+  +numero_cuenta: string
+  +cci: string
+  +saldo: decimal
+  +moneda: string
+  +tipo_cuenta: string
+  +estado: string
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class Transaccion {
+  +id: uuid
+  +user_id: int
+  +cuenta_id: uuid
+  +tipo: string
+  +descripcion: string
+  +monto: decimal
+  +fecha: datetime
+}
+
+class SolicitudPrestamo {
+  +id: uuid
+  +user_id: int
+  +monto: decimal
+  +plazo_meses: int
+  +tasa_anual: decimal
+  +cuota_mensual: decimal
+  +proposito: string
+  +ingresos_mensuales: decimal
+  +rds: decimal
+  +semaforo_rds: string
+  +score: int
+  +nivel_aprobacion: string
+  +estado: string
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class PersonalBanco {
+  +pkpersonal: int
+  +codpersonal: string
+  +numerodni: string
+  +nombre: string
+}
+
+class RolCargo {
+  +pkcargopersonal: int
+  +codcargopersonal: string
+  +descargopersonal: string
+}
+
+class Pago {
+  +id: uuid
+  +user_id: int
+  +servicio: string
+  +numero_contrato: string
+  +monto: decimal
+  +estado: string
+  +fecha: datetime
+}
+
+class GestionCobranza {
+  +id: int
+  +credito_id: int
+  +usuario_id: int
+  +tipo_gestion: string
+  +comentario: string
+  +resultado: string
+  +fecha: datetime
+}
+
+UsuarioApp "1" --> "0..*" Cuenta : posee
+UsuarioApp "1" --> "0..*" SolicitudPrestamo : solicita
+UsuarioApp "1" --> "0..*" Transaccion : registra
+UsuarioApp "1" --> "0..*" Pago : realiza
+
+Cuenta "1" --> "0..*" Transaccion : genera movimientos
+
+SolicitudPrestamo "1" --> "0..1" Transaccion : desembolso
+
+PersonalBanco "1" --> "1" RolCargo : tiene cargo
+PersonalBanco "1" --> "0..*" GestionCobranza : registra
+
+note right of SolicitudPrestamo
+El Homebanking crea la solicitud.
+El Core consulta, aprueba, rechaza
+o desembolsa usando esta entidad.
+end note
+
+@enduml

@@ -1,19 +1,9 @@
-import { Link, useLocation } from 'react-router-dom'
-import {
-  LayoutDashboard,
-  Inbox,
-  Gauge,
-  FilePlus2,
-  Users,
-  BadgeCheck,
-  AlertTriangle,
-  PiggyBank,
-} from 'lucide-react'
+import React from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
+import { LayoutDashboard, Inbox, Gauge, FilePlus2, Users, BadgeCheck, AlertTriangle, PiggyBank } from 'lucide-react'
 import { useAuthContext } from '../../context/AuthContext.jsx'
 import { puede } from '../../utils/permisos.js'
 
-// Menú estructurado según el flujo de otorgamiento MPR-003-CRE.
-// Cada sección puede declarar `accion`: solo se muestra si el rol tiene permiso.
 const SECCIONES = [
   {
     titulo: 'Principal',
@@ -42,7 +32,6 @@ const SECCIONES = [
   },
 ]
 
-// Determina si un ítem está activo (considerando el filtro de estado en la URL).
 function esActivo(item, location) {
   const estado = new URLSearchParams(location.search).get('estado')
   if (item.estado) {
@@ -55,29 +44,57 @@ function esActivo(item, location) {
 }
 
 export default function Sidebar() {
-  const location = useLocation()
   const { user } = useAuthContext()
+  const location = useLocation()
 
   // Oculta secciones cuyo permiso (accion) no tenga el rol del usuario.
   const visibles = SECCIONES.filter((sec) => !sec.accion || puede(user?.rol, sec.accion))
 
   return (
-    <nav className="sidebar">
+    <aside className="sidebar" style={{ background: '#fff', color: 'var(--c-primary-dark)', width: '280px', padding: '24px 16px', borderRight: '1px solid var(--c-border)', display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto' }}>
+      <div style={{ padding: '0 14px 24px 14px' }}>
+        <img src="/assets/bbva-logo.png" alt="BBVA" style={{ height: '28px', display: 'block' }} />
+      </div>
+
+      <div style={{ background: '#F3F4F6', borderRadius: '16px', padding: '16px', margin: '0 14px 24px 14px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--c-primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 'bold' }}>
+          {user?.nombres?.[0] || 'U'}
+        </div>
+        <div>
+          <div style={{ fontSize: '11px', color: 'var(--c-text-soft)' }}>Bienvenido,</div>
+          <div style={{ fontSize: '15px', fontWeight: 'bold', color: 'var(--c-primary-dark)' }}>{user?.nombres || 'Usuario'}</div>
+        </div>
+      </div>
+
       {visibles.map((sec) => (
-        <div className="sidebar__section" key={sec.titulo}>
-          <p className="sidebar__title">{sec.titulo}</p>
-          {sec.items.map(({ to, label, Icon, estado }) => (
-            <Link
-              key={label}
-              to={to}
-              className={'sidebar__link' + (esActivo({ to, estado }, location) ? ' active' : '')}
-            >
-              <Icon size={18} strokeWidth={2.2} />
-              {label}
-            </Link>
-          ))}
+        <div className="sidebar__section" key={sec.titulo} style={{ marginBottom: '16px' }}>
+          <p className="sidebar__title" style={{ color: 'var(--c-text-soft)', fontSize: '11px', paddingLeft: '14px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>
+            {sec.titulo}
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {sec.items.map((item) => {
+              const active = esActivo(item, location)
+              return (
+                <NavLink
+                  key={item.label}
+                  to={item.to}
+                  className={`sidebar__link ${active ? 'active' : ''}`}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '12px',
+                    textDecoration: 'none', fontSize: '14px', fontWeight: active ? '600' : '500',
+                    background: active ? 'var(--c-primary)' : 'transparent',
+                    color: active ? '#fff' : 'var(--c-primary-dark)',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <item.Icon size={18} strokeWidth={active ? 2.5 : 2} style={{ minWidth: '18px', color: active ? '#fff' : 'var(--c-text-soft)' }} />
+                  <span>{item.label}</span>
+                </NavLink>
+              )
+            })}
+          </div>
         </div>
       ))}
-    </nav>
+    </aside>
   )
 }

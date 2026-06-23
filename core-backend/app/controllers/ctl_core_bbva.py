@@ -40,7 +40,7 @@ def get_solicitudes(db: Session):
         })
     return result
 
-def get_solicitud(db: Session, solicitud_id: int):
+def get_solicitud(db: Session, solicitud_id: str):
     solicitud = db.query(SolicitudPrestamo).filter(SolicitudPrestamo.id == solicitud_id).first()
     if not solicitud:
         return None
@@ -70,7 +70,7 @@ def get_solicitud(db: Session, solicitud_id: int):
         }
     }
 
-def update_estado(db: Session, solicitud_id: int, estado: str):
+def update_estado(db: Session, solicitud_id: str, estado: str):
     solicitud = db.query(SolicitudPrestamo).filter(SolicitudPrestamo.id == solicitud_id).first()
     if not solicitud:
         return None
@@ -79,7 +79,7 @@ def update_estado(db: Session, solicitud_id: int, estado: str):
     db.refresh(solicitud)
     return True
 
-def desembolsar(db: Session, solicitud_id: int):
+def desembolsar(db: Session, solicitud_id: str):
     solicitud = db.query(SolicitudPrestamo).filter(SolicitudPrestamo.id == solicitud_id).first()
     if not solicitud or solicitud.estado != 'aprobado':
         return False, "Solicitud no encontrada o no está en estado aprobado."
@@ -93,6 +93,7 @@ def desembolsar(db: Session, solicitud_id: int):
     
     # Insertar transacción
     tx = Transaccion(
+        user_id=solicitud.user_id,
         cuenta_id=cuenta.id,
         tipo='credito',
         monto=solicitud.monto,

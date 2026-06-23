@@ -1,42 +1,37 @@
 :root {
-  /* Paleta de marca — BBVA */
-  --c-primary: #0726B4; /* azul principal */
-  --c-primary-dark: #072146; /* azul oscuro */
-  --c-accent: #1464A0; /* azul secundario */
-  --c-magenta: #1464A0;
-  --c-turquesa: #00a9a5;
-  --c-naranja: #f7941e;
-  --c-amarillo-t: #fbc02d;
-  --c-verde-t: #4caf50;
-  --c-morado: #072146;
-  --c-azul: #1464A0;
+  /* Paleta de marca — BBVA Perú */
+  --c-primary-dark: #072146; /* Azul corporativo oscuro */
+  --c-primary: #0726B4;      /* Azul principal */
+  --c-accent: #1464A0;       /* Azul medio */
+  --c-bg: #F4F6F8;           /* Fondo claro general */
+  --c-bg-light: #EAF4FF;     /* Azul claro de fondo */
+  --c-surface: #FFFFFF;      /* Blanco para tarjetas */
+  --c-border: #E5E7EB;
+  --c-text: #072146;         /* Texto principal oscuro BBVA */
+  --c-text-soft: #4B5563;    /* Texto secundario gris */
 
-  --c-bg: #f4f6f8; /* fondo bbva */
-  --c-surface: #ffffff;
-  --c-border: #e0e5eb;
-  --c-text: #121212;
-  --c-text-soft: #666666;
+  /* Estados y Semáforos */
+  --c-verde: #16A34A;        /* Éxito / Semáforo Verde */
+  --c-amarillo: #FACC15;     /* Advertencia / Semáforo Amarillo */
+  --c-rojo: #DC2626;         /* Riesgo / Semáforo Rojo / Peligro */
+  
+  --c-badge-blue: #DBEAFE;
+  --c-badge-blue-text: #1E40AF;
+  --c-badge-purple: #F3E8FF;
+  --c-badge-purple-text: #6B21A8;
+  --c-badge-orange: #FFEDD5;
+  --c-badge-orange-text: #C2410C;
 
-  /* Estados (semáforo) */
-  --c-verde: #16a34a;
-  --c-amarillo: #d97706;
-  --c-rojo: #dc2626;
+  /* Franja BBVA simplificada azul marino a azul medio */
+  --franja: linear-gradient(90deg, var(--c-primary-dark) 0%, var(--c-primary) 50%, var(--c-accent) 100%);
 
-  /* Franja BBVA simplificada */
-  --franja: repeating-linear-gradient(
-    90deg,
-    #0726B4 0 14px,
-    #1464A0 14px 22px,
-    #072146 22px 36px,
-    #0726B4 36px 44px,
-    #1464A0 44px 58px,
-    #072146 58px 66px,
-    #0726B4 66px 80px
-  );
-
-  --radius: 10px;
-  --shadow: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.06);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  /* Estilos de caja y sombras suaves */
+  --radius: 24px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
 }
 
 /* Franja tejida en el tope de las páginas internas */

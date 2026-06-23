@@ -6,6 +6,9 @@ import {
 import { bbvaCoreService } from '../services/svc_bbva_core.js'
 import { useAuth } from '../hooks/useAuth.js'
 import Loader from '../components/ui/Loader.jsx'
+import BBVACard from '../components/ui/BBVACard.jsx'
+import BBVAButton from '../components/ui/BBVAButton.jsx'
+import { StatusBadge, RiskBadge, RoleBadge } from '../components/ui/Badges.jsx'
 import { money } from '../utils/format.js'
 
 export default function SolicitudesBandejaPage() {
@@ -48,30 +51,22 @@ export default function SolicitudesBandejaPage() {
 
   return (
     <div>
-      <h1 className="page-title">Bandeja de Evaluación Crediticia</h1>
-      <p className="page-subtitle">
-        Consulta y gestiona las solicitudes de crédito provenientes de Homebanking.
-      </p>
+      <h1 className="page-title" style={{ color: 'var(--c-primary-dark)' }}>Bandeja de Solicitudes</h1>
+      <p className="page-subtitle">Solicitudes generadas desde Homebanking BBVA</p>
 
-      <div className="wb-top">
-        <div className="wb-panel" style={{ flex: 1 }}>
-          <h3 className="wb-panel__title">Datos del usuario</h3>
-          <div className="wb-fields">
-            <div className="wb-field">
-              <label>Usuario</label>
-              <span className="val">{user?.nombre || '—'}</span>
-            </div>
-            <div className="wb-field">
-              <label>Rol</label>
-              <span className="val">{user?.rol || '—'}</span>
-            </div>
-            <div className="wb-field">
-              <label>Agencia</label>
-              <span className="val">{user?.codagencia || '—'}</span>
-            </div>
+      <BBVACard style={{ marginBottom: '24px', padding: '16px 24px' }}>
+        <h3 style={{ margin: '0 0 16px 0', fontSize: '13px', color: 'var(--c-primary-dark)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Datos del Colaborador</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={{ fontSize: '12px', color: 'var(--c-text-soft)', fontWeight: '600' }}>Usuario</label>
+            <div style={{ fontWeight: '600', fontSize: '15px' }}>{user?.nombres} {user?.apellidos}</div>
+          </div>
+          <div>
+            <label style={{ fontSize: '12px', color: 'var(--c-text-soft)', fontWeight: '600' }}>Rol en el Core</label>
+            <div style={{ marginTop: '4px' }}><RoleBadge role={user?.rol} /></div>
           </div>
         </div>
-      </div>
+      </BBVACard>
 
       <div className="wb-panel" style={{ marginBottom: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
@@ -132,20 +127,15 @@ export default function SolicitudesBandejaPage() {
                   onClick={() => setSel(s)}
                   onDoubleClick={() => abrir(s.id)}
                 >
-                  <td><strong>{s.id}</strong></td>
-                  <td>{s.cliente}</td>
+                  <td><span style={{ fontSize: '11px', color: 'var(--c-text-soft)' }}>{s.id.split('-')[0]}</span></td>
+                  <td style={{ fontWeight: '600', color: 'var(--c-primary-dark)' }}>{s.cliente}</td>
                   <td className="num">{money(s.monto)}</td>
                   <td className="num">{s.plazo_meses}</td>
                   <td className="num">{s.rds}%</td>
-                  <td>{s.score}</td>
-                  <td style={{ textTransform: 'capitalize' }}>{s.nivel_aprobacion.replace('_', ' ')}</td>
-                  <td>
-                    <span style={{
-                      display: 'inline-block', width: 12, height: 12, borderRadius: '50%',
-                      backgroundColor: getSemaforoColor(s.semaforo_rds)
-                    }}></span>
-                  </td>
-                  <td style={{ textTransform: 'uppercase', fontWeight: 600 }}>{s.estado}</td>
+                  <td style={{ fontWeight: '700' }}>{s.score}</td>
+                  <td><RoleBadge role={s.nivel_aprobacion} /></td>
+                  <td><RiskBadge semaforo={s.semaforo_rds} /></td>
+                  <td><StatusBadge estado={s.estado} /></td>
                 </tr>
               ))}
               {items.length === 0 && (
@@ -160,11 +150,11 @@ export default function SolicitudesBandejaPage() {
         )}
       </div>
 
-      <div className="wb-toolbar">
-        <button className="wb-tool" disabled={!sel} onClick={() => abrir(sel?.id)}>
-          <ClipboardList size={20} />
+      <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
+        <BBVAButton disabled={!sel} onClick={() => abrir(sel?.id)}>
+          <ClipboardList size={18} style={{ marginRight: '8px', verticalAlign: '-3px' }} />
           Revisar y Decidir
-        </button>
+        </BBVAButton>
       </div>
     </div>
   )

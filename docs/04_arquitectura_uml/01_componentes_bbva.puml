@@ -1,0 +1,68 @@
+@startuml
+title Diagrama de Componentes - Sistema Integrado BBVA Perú Simulado
+
+skinparam backgroundColor #FFFFFF
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+skinparam component {
+  BackgroundColor #F4F6F8
+  BorderColor #072146
+  FontColor #072146
+}
+
+skinparam database {
+  BackgroundColor #EAF4FF
+  BorderColor #0726B4
+  FontColor #072146
+}
+
+actor "Cliente BBVA" as Cliente
+actor "Personal del Banco" as Personal
+
+package "Homebanking BBVA" {
+  component "Frontend Homebanking\nReact + Vite\nPuerto 5173" as HBFront
+  component "Backend Homebanking\nFastAPI\nPuerto 8000" as HBBack
+}
+
+package "Core Bancario BBVA" {
+  component "Frontend Core\nReact + Vite\nPuerto 5174" as CoreFront
+  component "Backend Core\nFastAPI\nPuerto 8001" as CoreBack
+}
+
+database "PostgreSQL\nbd_core_financiero" as DB {
+  component "app_usuarios" as TUsuarios
+  component "cuentas" as TCuentas
+  component "transacciones" as TTransacciones
+  component "solicitudes_prestamo" as TSolicitudes
+  component "pagos" as TPagos
+  component "dpersonal / roles core" as TRoles
+}
+
+component "Power BI\nDashboard Financiero" as PowerBI
+
+Cliente --> HBFront : usa
+HBFront --> HBBack : API REST
+HBBack --> DB : consulta / registra
+
+Personal --> CoreFront : usa
+CoreFront --> CoreBack : API REST
+CoreBack --> DB : consulta / actualiza
+
+DB --> PowerBI : indicadores financieros
+
+DB --> TUsuarios
+DB --> TCuentas
+DB --> TTransacciones
+DB --> TSolicitudes
+DB --> TPagos
+DB --> TRoles
+
+note bottom of DB
+Ambos sistemas comparten la misma base de datos.
+Esto permite el flujo end-to-end:
+Homebanking solicita crédito -> Core aprueba/desembolsa -> Homebanking refleja saldo.
+end note
+
+@enduml

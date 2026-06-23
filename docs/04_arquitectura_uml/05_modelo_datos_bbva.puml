@@ -1,0 +1,114 @@
+@startuml
+title Modelo de Datos Resumen - BBVA Perú Simulado
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam linetype ortho
+
+entity "app_usuarios" as app_usuarios {
+  * id : integer
+  --
+  dni : varchar
+  nombres : varchar
+  apellidos : varchar
+  correo : varchar
+  password_hash : varchar
+  rol : varchar
+  estado : varchar
+  fecha_registro : timestamp
+}
+
+entity "cuentas" as cuentas {
+  * id : uuid
+  --
+  user_id : integer
+  tipo : varchar
+  numero_cuenta : varchar
+  cci : varchar
+  saldo : numeric
+  moneda : varchar
+  tipo_cuenta : varchar
+  estado : varchar
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "transacciones" as transacciones {
+  * id : uuid
+  --
+  user_id : integer
+  cuenta_id : uuid
+  tipo : varchar
+  descripcion : varchar
+  monto : numeric
+  fecha : timestamp
+}
+
+entity "solicitudes_prestamo" as solicitudes {
+  * id : uuid
+  --
+  user_id : integer
+  monto : numeric
+  plazo_meses : integer
+  tasa_anual : numeric
+  cuota_mensual : numeric
+  proposito : text
+  ingresos_mensuales : numeric
+  rds : numeric
+  semaforo_rds : varchar
+  score : integer
+  nivel_aprobacion : varchar
+  estado : varchar
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "pagos" as pagos {
+  * id : uuid
+  --
+  user_id : integer
+  servicio : varchar
+  numero_contrato : varchar
+  monto : numeric
+  estado : varchar
+  fecha : timestamp
+}
+
+entity "dpersonal" as dpersonal {
+  * pkpersonal : integer
+  --
+  codpersonal : varchar
+  numerodni : varchar
+  nombre : varchar
+}
+
+entity "dpersonalcargo" as dpersonalcargo {
+  * pkpersonal : integer
+  * pkcargopersonal : integer
+}
+
+entity "dcargopersonal" as dcargopersonal {
+  * pkcargopersonal : integer
+  --
+  codcargopersonal : varchar
+  descargopersonal : varchar
+}
+
+app_usuarios ||--o{ cuentas : "tiene"
+app_usuarios ||--o{ transacciones : "registra"
+app_usuarios ||--o{ solicitudes : "solicita"
+app_usuarios ||--o{ pagos : "realiza"
+
+cuentas ||--o{ transacciones : "movimientos"
+
+dpersonal ||--o{ dpersonalcargo : "asignación"
+dcargopersonal ||--o{ dpersonalcargo : "cargo"
+
+note right of solicitudes
+Tabla puente de integración:
+Homebanking registra la solicitud.
+Core Bancario la evalúa, aprueba,
+rechaza o desembolsa.
+end note
+
+@enduml

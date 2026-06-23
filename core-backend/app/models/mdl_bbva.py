@@ -14,7 +14,7 @@ class AppUsuario(Base):
     password_hash = Column(String(255), nullable=False)
     rol = Column(String(50), default='cliente')
     estado = Column(String(20), default='activo')
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    # created_at no existe en la BD real, lo removemos para evitar ProgrammingError
 
     cuentas = relationship("Cuenta", back_populates="usuario")
     solicitudes = relationship("SolicitudPrestamo", back_populates="usuario")
@@ -43,6 +43,7 @@ class Transaccion(Base):
     __tablename__ = 'transacciones'
 
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String(50), nullable=False)
     cuenta_id = Column(Integer, ForeignKey('cuentas.id'), nullable=False)
     tipo = Column(String(20), nullable=False) # 'credito', 'debito'
     monto = Column(Numeric(15, 2), nullable=False)

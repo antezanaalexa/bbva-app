@@ -1,0 +1,110 @@
+@startuml
+title Diagrama de Casos de Uso - BBVA Perú Simulado
+
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+
+skinparam actor {
+  BackgroundColor #EAF4FF
+  BorderColor #072146
+  FontColor #072146
+}
+
+skinparam usecase {
+  BackgroundColor #F7F8FA
+  BorderColor #0726B4
+  FontColor #072146
+}
+
+actor "Cliente" as Cliente
+actor "Asesor" as Asesor
+actor "Administrador" as Admin
+actor "Jefe Regional" as Jefe
+actor "Riesgos" as Riesgos
+
+rectangle "Homebanking BBVA" {
+  usecase "Registrarse" as UC1
+  usecase "Iniciar sesión" as UC2
+  usecase "Consultar cuentas" as UC3
+  usecase "Realizar transferencia" as UC4
+  usecase "Solicitar préstamo" as UC5
+  usecase "Ver estado de préstamo" as UC6
+}
+
+rectangle "Core Bancario BBVA" {
+  usecase "Iniciar sesión Core" as UC7
+  usecase "Ver dashboard" as UC8
+  usecase "Ver bandeja de solicitudes" as UC9
+  usecase "Ver detalle de solicitud" as UC10
+  usecase "Evaluar RDS y score" as UC11
+  usecase "Aprobar solicitud" as UC12
+  usecase "Rechazar solicitud" as UC13
+  usecase "Desembolsar crédito" as UC14
+  usecase "Consultar mora" as UC15
+  usecase "Registrar gestión de cobranza" as UC16
+  usecase "Derivar a judicial" as UC17
+  usecase "Castigar crédito" as UC18
+}
+
+Cliente --> UC1
+Cliente --> UC2
+Cliente --> UC3
+Cliente --> UC4
+Cliente --> UC5
+Cliente --> UC6
+
+Asesor --> UC7
+Asesor --> UC8
+Asesor --> UC9
+Asesor --> UC10
+Asesor --> UC11
+Asesor --> UC12
+Asesor --> UC13
+Asesor --> UC15
+Asesor --> UC16
+
+Admin --> UC7
+Admin --> UC8
+Admin --> UC9
+Admin --> UC10
+Admin --> UC11
+Admin --> UC12
+Admin --> UC13
+Admin --> UC14
+Admin --> UC15
+Admin --> UC17
+
+Jefe --> UC7
+Jefe --> UC8
+Jefe --> UC9
+Jefe --> UC10
+Jefe --> UC11
+Jefe --> UC12
+Jefe --> UC13
+Jefe --> UC14
+Jefe --> UC15
+Jefe --> UC17
+
+Riesgos --> UC7
+Riesgos --> UC8
+Riesgos --> UC9
+Riesgos --> UC10
+Riesgos --> UC11
+Riesgos --> UC12
+Riesgos --> UC13
+Riesgos --> UC14
+Riesgos --> UC15
+Riesgos --> UC17
+Riesgos --> UC18
+
+UC5 ..> UC11 : <<include>>
+UC12 ..> UC14 : <<precedes>>
+UC14 ..> UC6 : <<updates>>
+
+note bottom
+El cliente solicita créditos desde Homebanking.
+El Core Bancario evalúa, aprueba, rechaza y desembolsa.
+end note
+
+@enduml

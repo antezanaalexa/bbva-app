@@ -1,34 +1,39 @@
 /* ============================================================
-   Landing pública — Banco Andino
+   Landing pública — BBVA
    Paleta inspirada en la manta andina (textil multicolor):
    rojo · magenta · turquesa · naranja · amarillo · verde · morado
    ============================================================ */
 .home {
-  --rojo: #e2132b;
-  --magenta: #e6398b;
-  --turquesa: #00a9a5;
-  --naranja: #f7941e;
-  --amarillo: #fbc02d;
-  --verde: #4caf50;
-  --morado: #8e24aa;
-  --azul: #29b6f6;
+  --navy: #072146;
+  --core-blue: #004481;
+  --light-blue: #1973B8;
+  --aqua: #2DBEEF;
+  --white: #ffffff;
+  --grey: #121212;
+  --grey-light: #f4f4f4;
+
+  /* We replace the multi-colors to map to BBVA colors so existing components won't break if they use them */
+  --rojo: #072146; /* Replaced by Navy */
+  --magenta: #004481; /* Replaced by Core Blue */
+  --turquesa: #1973B8; /* Replaced by Light Blue */
+  --naranja: #2DBEEF; /* Replaced by Aqua */
+  --amarillo: #f4f4f4; /* Light grey */
+  --verde: #004481;
+  --morado: #072146;
+  --azul: #1973B8;
 
   --home-text: #2b2b3a;
   --home-soft: #6b6b7b;
 
-  /* Franja textil reutilizable (evoca la banda tejida de la manta) */
-  --franja: repeating-linear-gradient(
+  /* Franja BBVA de color corporativo azul marino a cian */
+  --franja: linear-gradient(
     90deg,
-    var(--rojo) 0 14px,
-    var(--amarillo) 14px 22px,
-    var(--turquesa) 22px 36px,
-    var(--morado) 36px 44px,
-    var(--verde) 44px 58px,
-    var(--magenta) 58px 66px,
-    var(--naranja) 66px 80px
+    #072146 0%,
+    #0726B4 50%,
+    #02A0E3 100%
   );
 
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
   color: var(--home-text);
   background: #fff;
   min-height: 100vh;
@@ -381,11 +386,11 @@
   gap: 12px;
   padding: 12px 32px;
   background: #fff;
-  border-bottom: 1px solid #f0e6ea;
+  border-bottom: 1px solid #e5e7eb;
 }
 .home-header__chip {
-  background: #fde7ef;
-  color: var(--magenta);
+  background: #EAF4FF;
+  color: #004481;
   font-weight: 700;
   font-size: 12px;
   padding: 6px 14px;
@@ -393,7 +398,7 @@
 }
 .home-footer-bar {
   flex: 0 0 auto;
-  background: #1c1c28;
+  background: #072146;
   color: #cfcfdc;
   display: flex;
   align-items: center;
@@ -410,7 +415,7 @@
 .home-footer-bar a:hover {
   text-decoration: underline;
 }
-
+ 
 .home-split {
   display: flex;
   flex: 1;
@@ -418,7 +423,7 @@
   min-height: 0;
 }
 .split-info {
-  flex: 1 1 50%;
+  flex: 1 1 55%;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
@@ -426,43 +431,30 @@
   animation: splitInLeft 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .split-login {
-  flex: 1 1 50%;
+  flex: 1 1 45%;
   min-width: 0;
   overflow: hidden;
   position: relative;
   display: flex;
-  color: #fff;
-  background: linear-gradient(150deg, #8e24aa 0%, #e2132b 52%, #f7941e 100%);
-  background-size: 180% 180%;
-  animation: splitInRight 0.7s cubic-bezier(0.22, 1, 0.36, 1) both,
-    lpShift 18s ease 0.7s infinite;
+  color: #072146;
+  background: #ffffff;
+  border-left: 1px solid #e5e7eb;
+  animation: splitInRight 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.split-login::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.88) 100%), url('/assets/edificio-bbva-2.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.25;
+  z-index: 0;
 }
 /* Flores decorativas con los colores del logo */
 .split-login__flor {
-  position: absolute;
-  pointer-events: none;
-  z-index: 0;
-}
-.split-login__flor--1 {
-  width: 560px;
-  height: 560px;
-  left: -150px;
-  bottom: -160px;
-  opacity: 0.55;
-  animation: florSpin 60s linear infinite;
-}
-.split-login__flor--2 {
-  width: 300px;
-  height: 300px;
-  right: -80px;
-  top: -70px;
-  opacity: 0.4;
-  animation: florSpin 90s linear infinite reverse;
-}
-@keyframes florSpin {
-  to {
-    transform: rotate(360deg);
-  }
+  display: none;
 }
 @keyframes splitInLeft {
   from {
@@ -476,25 +468,12 @@
     transform: translateX(30px);
   }
 }
-@keyframes lpShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
 .split-login::before {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(130% 80% at 85% -10%, rgba(255, 255, 255, 0.22), transparent 55%),
-    radial-gradient(110% 70% at -10% 110%, rgba(0, 0, 0, 0.22), transparent 55%);
+  background: radial-gradient(circle at 80% 20%, rgba(2, 160, 227, 0.05) 0%, transparent 60%);
 }
 .split-login__inner {
   position: relative;
@@ -536,8 +515,9 @@
   align-items: center;
   gap: 7px;
   align-self: flex-start;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: #EAF4FF;
+  border: 1px solid #BEE3F8;
+  color: #004481;
   border-radius: 999px;
   padding: 5px 12px;
   font-size: 11.5px;
@@ -548,15 +528,17 @@
 .split-login h2 {
   margin: 6px 0 4px;
   font-size: 32px;
+  color: #072146;
+  font-weight: 800;
   letter-spacing: -0.5px;
 }
 .split-login__sub {
   margin: 0 0 26px;
-  opacity: 0.9;
+  color: #5b6b82;
   font-size: 14px;
 }
 
-/* Campos del panel de login (sobre fondo de color) */
+/* Campos del panel de login */
 .lp-field {
   display: flex;
   flex-direction: column;
@@ -566,7 +548,7 @@
 .lp-field label {
   font-size: 13px;
   font-weight: 600;
-  opacity: 0.95;
+  color: #072146;
 }
 .lp-input {
   position: relative;
@@ -581,32 +563,31 @@
 }
 .lp-input input {
   width: 100%;
-  padding: 13px 14px 13px 42px;
-  border-radius: 11px;
-  border: 1.5px solid transparent;
+  padding: 13px 14px 13px 46px;
+  border-radius: 24px;
+  border: 1px solid #D2D4D9;
   font-size: 14px;
   background: #ffffff;
-  color: #2b2b3a;
+  color: #072146;
   box-sizing: border-box;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .lp-input input:focus {
   outline: none;
-  border-color: #ffffff;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.35);
+  border-color: #0726B4;
+  box-shadow: 0 0 0 4px rgba(7, 38, 180, 0.15);
 }
 .split-login__foot {
   margin-top: 26px;
   padding-top: 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  border-top: 1px solid #e5e7eb;
   display: flex;
   justify-content: center;
   gap: 16px;
   font-size: 12px;
-  opacity: 0.9;
 }
 .split-login__foot a {
-  color: #fff;
+  color: #0726B4;
   text-decoration: none;
 }
 .split-login__foot a:hover {
@@ -624,15 +605,20 @@
   align-items: center;
   gap: 7px;
   cursor: pointer;
+  color: #072146;
 }
 .lp-link {
   background: none;
   border: none;
-  color: #fff;
-  text-decoration: underline;
+  color: #0726B4;
+  text-decoration: none;
   cursor: pointer;
   font-size: 13px;
   padding: 0;
+  font-weight: 600;
+}
+.lp-link:hover {
+  text-decoration: underline;
 }
 .btn-login {
   width: 100%;
@@ -640,19 +626,20 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #fff;
-  color: var(--rojo);
+  background: #0726B4;
+  color: #ffffff;
   border: none;
   padding: 14px;
-  border-radius: 11px;
+  border-radius: 24px;
   font-size: 15px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 12px rgba(7, 38, 180, 0.15);
+  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 .btn-login:hover:not(:disabled) {
-  transform: translateY(-2px);
+  background: #051D80;
+  transform: translateY(-1px);
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.26);
 }
 .btn-login:disabled {

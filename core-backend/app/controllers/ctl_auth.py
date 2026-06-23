@@ -11,17 +11,28 @@ def login(db: Session, numerodni: str, password: str):
         "11111113": {"rol": "jefe_regional", "cargo": "Jefe de Negocios Regional", "nombre": "Jefe Regional de Prueba"},
         "11111114": {"rol": "riesgos", "cargo": "Jefe de Riesgos", "nombre": "Riesgos de Prueba"}
     }
+    
+    ASIGNACIONES_PRUEBA = {
+        "11111111": {"pkasesor": 31, "codasesor": "AS0031"},
+        "11111112": {"pkasesor": 36, "codasesor": "AS0036"},
+        "11111113": {"pkasesor": 12, "codasesor": "AS0012"},
+        "11111114": {"pkasesor": 18, "codasesor": "AS0018"}
+    }
 
     if numerodni in test_users:
         if password != "bbva123" and password != numerodni:
             return None
         
         user_data = test_users[numerodni]
+        asig = ASIGNACIONES_PRUEBA.get(numerodni, {})
+        pkasesor = asig.get("pkasesor") if user_data["rol"] == "asesor" else None
+        codasesor = asig.get("codasesor") if user_data["rol"] == "asesor" else None
+
         token = create_access_token({
             "sub":         numerodni,
             "pkpersonal":  int(numerodni),
-            "pkasesor":    int(numerodni) if user_data["rol"] == "asesor" else None,
-            "codasesor":   f"A{numerodni}" if user_data["rol"] == "asesor" else None,
+            "pkasesor":    pkasesor,
+            "codasesor":   codasesor,
             "nombre":      user_data["nombre"],
             "rol":         user_data["rol"],
             "cargo":       user_data["cargo"],
@@ -31,8 +42,8 @@ def login(db: Session, numerodni: str, password: str):
             "access_token": token,
             "token_type":   "bearer",
             "codpersonal":  numerodni,
-            "pkasesor":     int(numerodni) if user_data["rol"] == "asesor" else None,
-            "codasesor":    f"A{numerodni}" if user_data["rol"] == "asesor" else None,
+            "pkasesor":     pkasesor,
+            "codasesor":    codasesor,
             "nombre":       user_data["nombre"],
             "rol":          user_data["rol"],
             "codagencia":   "0001",

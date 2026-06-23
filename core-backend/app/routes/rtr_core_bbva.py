@@ -15,28 +15,28 @@ def get_solicitudes(db: Session = Depends(get_db), current_user: dict = Depends(
     return ctl_core_bbva.get_solicitudes(db)
 
 @router.get("/solicitudes/{solicitud_id}")
-def get_solicitud(solicitud_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def get_solicitud(solicitud_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     data = ctl_core_bbva.get_solicitud(db, solicitud_id)
     if not data:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada")
     return data
 
 @router.post("/solicitudes/{solicitud_id}/aprobar")
-def aprobar_solicitud(solicitud_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def aprobar_solicitud(solicitud_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     success = ctl_core_bbva.update_estado(db, solicitud_id, "aprobado")
     if not success:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada")
     return {"message": "Solicitud aprobada correctamente"}
 
 @router.post("/solicitudes/{solicitud_id}/rechazar")
-def rechazar_solicitud(solicitud_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def rechazar_solicitud(solicitud_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     success = ctl_core_bbva.update_estado(db, solicitud_id, "rechazado")
     if not success:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada")
     return {"message": "Solicitud rechazada"}
 
 @router.post("/solicitudes/{solicitud_id}/desembolsar")
-def desembolsar_solicitud(solicitud_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def desembolsar_solicitud(solicitud_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     rol = current_user.get("rol")
     if rol not in ["asesor", "administrador"]:
         raise HTTPException(status_code=403, detail="Solo asesor o administrador pueden desembolsar")

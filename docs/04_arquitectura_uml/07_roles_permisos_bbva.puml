@@ -1,0 +1,90 @@
+@startuml
+title Matriz de Roles y Permisos - BBVA Perú Simulado
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam rectangle {
+  BackgroundColor #F7F8FA
+  BorderColor #072146
+  FontColor #072146
+}
+
+actor Cliente
+actor Asesor
+actor Administrador
+actor "Jefe Regional" as Jefe
+actor Riesgos
+
+rectangle "Permisos Homebanking" {
+  usecase "Registrarse" as P1
+  usecase "Consultar cuentas" as P2
+  usecase "Transferir" as P3
+  usecase "Solicitar préstamo" as P4
+  usecase "Ver estado de crédito" as P5
+}
+
+rectangle "Permisos Core Bancario" {
+  usecase "Ver solicitudes" as P6
+  usecase "Evaluar RDS y score" as P7
+  usecase "Aprobar nivel asesor" as P8
+  usecase "Aprobar nivel administrador" as P9
+  usecase "Aprobar nivel jefe regional" as P10
+  usecase "Aprobar nivel riesgos" as P11
+  usecase "Rechazar solicitud" as P12
+  usecase "Desembolsar crédito" as P13
+  usecase "Consultar mora" as P14
+  usecase "Registrar cobranza" as P15
+  usecase "Derivar judicial" as P16
+  usecase "Castigar crédito" as P17
+}
+
+Cliente --> P1
+Cliente --> P2
+Cliente --> P3
+Cliente --> P4
+Cliente --> P5
+
+Asesor --> P6
+Asesor --> P7
+Asesor --> P8
+Asesor --> P12
+Asesor --> P14
+Asesor --> P15
+
+Administrador --> P6
+Administrador --> P7
+Administrador --> P8
+Administrador --> P9
+Administrador --> P12
+Administrador --> P13
+Administrador --> P14
+Administrador --> P16
+
+Jefe --> P6
+Jefe --> P7
+Jefe --> P8
+Jefe --> P9
+Jefe --> P10
+Jefe --> P12
+Jefe --> P13
+Jefe --> P14
+Jefe --> P16
+
+Riesgos --> P6
+Riesgos --> P7
+Riesgos --> P8
+Riesgos --> P9
+Riesgos --> P10
+Riesgos --> P11
+Riesgos --> P12
+Riesgos --> P13
+Riesgos --> P14
+Riesgos --> P16
+Riesgos --> P17
+
+note bottom
+Las acciones críticas deben validarse en backend
+mediante JWT y control de roles.
+end note
+
+@enduml
