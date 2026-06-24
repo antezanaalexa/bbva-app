@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS cuentas (
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
     CONSTRAINT chk_cuentas_tipo CHECK (tipo IN ('ahorro','corriente')),
-    CONSTRAINT chk_cuentas_tipo_cuenta CHECK (tipo_cuenta IN ('digital','independencia','ganadora','sueldo')),
+    CONSTRAINT chk_cuentas_tipo_cuenta CHECK (tipo_cuenta IN ('digital','independencia','ganadora','sueldo','vip')),
     CONSTRAINT chk_cuentas_moneda CHECK (moneda IN ('PEN','USD')),
     CONSTRAINT chk_cuentas_estado CHECK (estado IN ('activa','inactiva','bloqueada','cerrada')),
     CONSTRAINT uq_cuentas_user_producto_moneda UNIQUE (user_id, tipo_cuenta, moneda)
@@ -139,6 +139,7 @@ CREATE TABLE IF NOT EXISTS solicitudes_prestamo (
     score               INT,
     nivel_aprobacion    VARCHAR(40),
     estado              VARCHAR(30) NOT NULL DEFAULT 'pendiente',
+    cuenta_destino_id   UUID REFERENCES cuentas(id) ON DELETE SET NULL,
     created_at          TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMP NOT NULL DEFAULT NOW(),
     CONSTRAINT chk_solicitudes_estado CHECK (estado IN ('pendiente','en_evaluacion','observado','aprobado','rechazado','desembolsado','cancelado')),
@@ -200,11 +201,11 @@ CREATE TABLE IF NOT EXISTS bbva_bandas_mora (
 
 TRUNCATE TABLE bbva_bandas_mora RESTART IDENTITY;
 INSERT INTO bbva_bandas_mora (dias_min, dias_max, banda, descripcion) VALUES
-(0,   30,  'PREVENTIVA', 'Seguimiento preventivo'),
-(31,  60,  'TEMPRANA',   'Cobranza temprana'),
-(61,  120, 'TARDIA',     'Cobranza tardía'),
-(121, 180, 'JUDICIAL',   'Derivación judicial'),
-(181, NULL,'CASTIGO',    'Castigo contable');
+(0,   8,   'PREVENTIVA', 'Normal / Alerta temprana (Hasta 8 días)'),
+(9,   30,  'TEMPRANA',   'Con Problemas Potenciales (CPP) (9 a 30 días)'),
+(31,  120, 'TARDIA',     'Deficiente / Dudoso (31 a 120 días)'),
+(121, 180, 'JUDICIAL',   'Cobranza judicial / Pérdida (121 a 180 días)'),
+(181, NULL,'CASTIGO',    'Castigo contable (> 180 días)');
 
 -- ============================================================================
 -- F. FUNCIONES ÚTILES PARA BACKEND LOCAL

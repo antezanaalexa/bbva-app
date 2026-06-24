@@ -69,6 +69,7 @@ class SolicitudPrestamo(Base):
     score = Column(Integer, nullable=False)
     nivel_aprobacion = Column(String(50), nullable=False)
     estado = Column(String(50), default='pendiente')
+    cuenta_destino_id = Column(String(50), ForeignKey('cuentas.id'), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     usuario = relationship("AppUsuario", back_populates="solicitudes")

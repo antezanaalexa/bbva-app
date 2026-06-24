@@ -51,6 +51,7 @@ export default function ScoringForm({ onSubmit, loading, codasesorDefault }) {
             type="text"
             value={form.codcliente}
             onChange={(e) => set('codcliente', e.target.value)}
+            placeholder="Ej. CLI92754315"
             required
           />
         </div>
@@ -117,6 +118,7 @@ export default function ScoringForm({ onSubmit, loading, codasesorDefault }) {
             type="text"
             value={form.codasesor}
             onChange={(e) => set('codasesor', e.target.value)}
+            placeholder="Ej. AS0002"
             required
           />
         </div>

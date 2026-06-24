@@ -62,18 +62,20 @@ class AhorroRetiroRequest(BaseModel):
 # ─── CRÉDITOS ─────────────────────────────────────────────────────────────────
 
 class CreditoSimularRequest(BaseModel):
-    monto: float = Field(gt=0, le=150000)
+    monto: float = Field(gt=0, le=500000)
     plazo_meses: int = Field(ge=6, le=60)
-    tasa_anual: float = Field(gt=0, le=50, default=18.5)
+    tasa_anual: Optional[float] = None
+    proposito: Optional[str] = "consumo"
 
 
 class CreditoSolicitudRequest(BaseModel):
     user_id: str
-    monto: float = Field(gt=0, le=150000)
+    monto: float = Field(gt=0, le=500000)
     plazo_meses: int = Field(ge=6, le=60)
-    tasa_anual: float = Field(gt=0, le=50, default=18.5)
+    tasa_anual: Optional[float] = None
     proposito: Optional[str] = "consumo"
     ingresos_mensuales: float = Field(gt=0)
+    cuenta_destino_id: Optional[str] = None
 
 
 class CreditoSimularResponse(BaseModel):

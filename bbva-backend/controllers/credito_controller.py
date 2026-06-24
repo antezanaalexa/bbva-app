@@ -4,11 +4,11 @@ service = CreditoService()
 
 class CreditoController:
     async def simular(self, datos) -> dict:
-        resultado = service.calcular_cuota(datos.monto, datos.plazo_meses, datos.tasa_anual)
+        resultado = service.calcular_cuota(datos.monto, datos.plazo_meses, proposito=datos.proposito)
         return {"success": True, "data": resultado}
 
     async def cronograma(self, datos) -> dict:
-        cronograma = service.generar_cronograma(datos.monto, datos.plazo_meses, datos.tasa_anual)
+        cronograma = service.generar_cronograma(datos.monto, datos.plazo_meses, proposito=datos.proposito)
         return {"success": True, "data": cronograma}
 
     async def solicitar(self, datos) -> dict:

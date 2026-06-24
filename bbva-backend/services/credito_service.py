@@ -4,8 +4,10 @@ class CreditoService:
     def __init__(self):
         self.repository = CreditoRepository()
 
-    def calcular_cuota(self, monto: float, plazo: int, tasa_anual: float) -> dict:
-        r = (tasa_anual / 100) / 12
+    def calcular_cuota(self, monto: float, plazo: int, tasa_anual: float = None, proposito: str = "consumo") -> dict:
+        from services.tasas_bbva import TASAS_SIMULADAS_POR_PROPOSITO, PRESTAMO_PERSONAL_BPI_TEA
+        tasa = TASAS_SIMULADAS_POR_PROPOSITO.get(proposito, PRESTAMO_PERSONAL_BPI_TEA)
+        r = (1 + tasa / 100) ** (1 / 12) - 1
         factor = (1 + r) ** plazo
         cuota = monto * (r * factor) / (factor - 1)
         total = cuota * plazo
@@ -16,7 +18,7 @@ class CreditoService:
             "total_pagar": round(total, 2),
             "total_interes": round(total - monto, 2),
             "plazo_meses": plazo,
-            "tasa_anual": tasa_anual
+            "tasa_anual": tasa
         }
 
     def evaluar_credito(self, monto, cuota, ingresos):
@@ -72,10 +74,11 @@ class CreditoService:
         }
 
     def solicitar(self, datos: dict) -> dict:
+        proposito = datos.get("proposito", "consumo")
         calculo = self.calcular_cuota(
             datos["monto"],
             datos["plazo_meses"],
-            datos["tasa_anual"]
+            proposito=proposito
         )
 
         evaluacion = self.evaluar_credito(
@@ -101,8 +104,10 @@ class CreditoService:
     def cancelar(self, solicitud_id: str) -> bool:
         return self.repository.eliminar(solicitud_id)
 
-    def generar_cronograma(self, monto: float, plazo: int, tasa_anual: float) -> list:
-        r = (tasa_anual / 100) / 12
+    def generar_cronograma(self, monto: float, plazo: int, tasa_anual: float = None, proposito: str = "consumo") -> list:
+        from services.tasas_bbva import TASAS_SIMULADAS_POR_PROPOSITO, PRESTAMO_PERSONAL_BPI_TEA
+        tasa = TASAS_SIMULADAS_POR_PROPOSITO.get(proposito, PRESTAMO_PERSONAL_BPI_TEA)
+        r = (1 + tasa / 100) ** (1 / 12) - 1
         factor = (1 + r) ** plazo
         cuota = monto * (r * factor) / (factor - 1)
         saldo = monto

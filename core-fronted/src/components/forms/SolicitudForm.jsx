@@ -54,7 +54,7 @@ export default function SolicitudForm({ onSubmit, loading, codasesorDefault }) {
       <div className="form-grid">
         <div className="field">
           <label>Código de cliente</label>
-          <input type="text" value={form.codcliente} onChange={(e) => set('codcliente', e.target.value)} required />
+          <input type="text" value={form.codcliente} onChange={(e) => set('codcliente', e.target.value)} placeholder="Ej. CLI11111111" required />
         </div>
         <div className="field">
           <label>Tipo de crédito</label>
@@ -88,13 +88,15 @@ export default function SolicitudForm({ onSubmit, loading, codasesorDefault }) {
         </div>
         <div className="field">
           <label>Código de asesor</label>
-          <input type="text" value={form.codasesor} onChange={(e) => set('codasesor', e.target.value)} required />
+          <input type="text" value={form.codasesor} onChange={(e) => set('codasesor', e.target.value)} placeholder="Ej. AS0031" required />
         </div>
       </div>
 
-      <h4>Centrales de riesgo (opcional)</h4>
+      <h4>Centrales de riesgo (Simulación opcional)</h4>
       <p className="page-subtitle" style={{ marginTop: 0 }}>
-        No están en la BD del core. Mejoran el cálculo del RDS y la ruta de aprobación.
+        En un banco real, el Core se conecta a Equifax/Infocorp para obtener esto automáticamente. 
+        Aquí puedes simularlos manualmente para ver cómo el Motor de Riesgos castiga o mejora el score, 
+        y cómo decide la ruta de aprobación (Asesor vs Jefe Regional).
       </p>
       <div className="form-grid">
         <div className="field">

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect, useCallback } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
-  RefreshCw, ClipboardList
+  RefreshCw, ClipboardList, CheckCircle, XCircle, AlertCircle
 } from 'lucide-react'
 import { bbvaCoreService } from '../services/svc_bbva_core.js'
 import { useAuth } from '../hooks/useAuth.js'
@@ -13,61 +13,92 @@ import { money } from '../utils/format.js'
 
 export default function SolicitudesBandejaPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
-  
+
+  const estadoParam = new URLSearchParams(location.search).get('estado')
+
+  const esAsesor = user?.rol === 'asesor'
+
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [sel, setSel] = useState(null)
 
-  function cargar() {
+  const cargar = useCallback(() => {
     setLoading(true)
-    bbvaCoreService.getSolicitudes()
+    const fetchFn = esAsesor
+      ? bbvaCoreService.getSolicitudesMias
+      : bbvaCoreService.getSolicitudes
+    fetchFn()
       .then(data => {
         setItems(data)
         setLoading(false)
       })
-      .catch(err => {
+      .catch(() => {
         setError('Error al cargar solicitudes')
         setLoading(false)
       })
-  }
+  }, [esAsesor])
 
   useEffect(() => {
     cargar()
-  }, [])
+  }, [cargar])
 
   function abrir(id) {
     if (id) navigate(`/solicitudes/${id}`)
   }
 
-  // Semaforo BBVA logic
-  const getSemaforoColor = (color) => {
-    if (color === 'verde') return '#16a34a'
-    if (color === 'amarillo') return '#d97706'
-    if (color === 'rojo') return '#dc2626'
-    return '#666'
-  }
+  let pageTitle = 'Bandeja de Solicitudes'
+  if (esAsesor) pageTitle = 'Bandeja de Solicitudes (Nivel Asesor)'
+  else if (estadoParam === '6') pageTitle = 'Propuesta y Comité'
+  else if (estadoParam === '2') pageTitle = 'Aprobación y Desembolso'
+
+  let pageSubtitle = esAsesor
+    ? 'Solicitudes de nivel asesor (hasta S/ 30,000) — puedes aprobar o rechazar las que están pendientes'
+    : 'Solicitudes generadas desde Homebanking BBVA'
+  if (estadoParam === '6') pageSubtitle = 'Solicitudes pendientes de evaluación y aprobación'
+  if (estadoParam === '2') pageSubtitle = 'Solicitudes aprobadas listas para desembolso'
+
+  const filteredItems = items.filter(s => {
+    if (estadoParam === '6') return s.estado === 'pendiente' || s.estado === 'en_evaluacion'
+    if (estadoParam === '2') return s.estado === 'aprobado'
+    return true
+  })
 
   return (
     <div>
-      <h1 className="page-title" style={{ color: 'var(--c-primary-dark)' }}>Bandeja de Solicitudes</h1>
-      <p className="page-subtitle">Solicitudes generadas desde Homebanking BBVA</p>
+      <h1 className="page-title" style={{ color: 'var(--c-primary-dark)' }}>
+        {pageTitle}
+      </h1>
+      <p className="page-subtitle">
+        {pageSubtitle}
+      </p>
 
+      {/* Datos del colaborador */}
       <BBVACard style={{ marginBottom: '24px', padding: '16px 24px' }}>
         <h3 style={{ margin: '0 0 16px 0', fontSize: '13px', color: 'var(--c-primary-dark)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Datos del Colaborador</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
           <div>
             <label style={{ fontSize: '12px', color: 'var(--c-text-soft)', fontWeight: '600' }}>Usuario</label>
-            <div style={{ fontWeight: '600', fontSize: '15px' }}>{user?.nombres} {user?.apellidos}</div>
+            <div style={{ fontWeight: '600', fontSize: '15px' }}>{user?.nombre || user?.nombres} {user?.apellidos || ''}</div>
           </div>
           <div>
             <label style={{ fontSize: '12px', color: 'var(--c-text-soft)', fontWeight: '600' }}>Rol en el Core</label>
             <div style={{ marginTop: '4px' }}><RoleBadge role={user?.rol} /></div>
           </div>
+          {esAsesor && (
+            <div>
+              <label style={{ fontSize: '12px', color: 'var(--c-text-soft)', fontWeight: '600' }}>Acceso</label>
+              <div style={{ fontSize: '13px', color: 'var(--c-text-soft)', marginTop: '4px' }}>
+                Solo solicitudes de nivel asesor · Aprobación de créditos hasta S/ 30,000
+              </div>
+            </div>
+          )}
         </div>
       </BBVACard>
 
+      {/* Panel de acción con solicitud seleccionada */}
       <div className="wb-panel" style={{ marginBottom: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
           <div style={{ flex: 1 }}>
@@ -91,14 +122,28 @@ export default function SolicitudesBandejaPage() {
                   {sel?.estado ?? '—'}
                 </span>
               </div>
+              {esAsesor && sel && (
+                <div className="wb-field">
+                  <label>Nivel requerido</label>
+                  <span className="val"><RoleBadge role={sel?.nivel_aprobacion} /></span>
+                </div>
+              )}
             </div>
           </div>
-          <button className="btn btn--ghost" onClick={cargar} title="Refrescar">
-            <RefreshCw size={16} style={{ verticalAlign: '-3px' }} /> Actualizar
-          </button>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+            <button className="btn btn--ghost" onClick={cargar} title="Refrescar">
+              <RefreshCw size={16} style={{ verticalAlign: '-3px' }} /> Actualizar
+            </button>
+            <BBVAButton disabled={!sel} onClick={() => abrir(sel?.id)}>
+              <ClipboardList size={18} style={{ marginRight: '8px', verticalAlign: '-3px' }} />
+              Ver Detalle
+            </BBVAButton>
+          </div>
         </div>
       </div>
 
+      {/* Tabla de solicitudes */}
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         {loading && <div style={{ padding: 20 }}><Loader texto="Cargando solicitudes…" /></div>}
         {error && <div className="alert alert--error" style={{ margin: 16 }}>{error}</div>}
@@ -119,29 +164,31 @@ export default function SolicitudesBandejaPage() {
               </tr>
             </thead>
             <tbody>
-              {items.map((s) => (
-                <tr
-                  key={s.id}
-                  className={sel?.id === s.id ? 'sel' : ''}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => setSel(s)}
-                  onDoubleClick={() => abrir(s.id)}
-                >
-                  <td><span style={{ fontSize: '11px', color: 'var(--c-text-soft)' }}>{s.id.split('-')[0]}</span></td>
-                  <td style={{ fontWeight: '600', color: 'var(--c-primary-dark)' }}>{s.cliente}</td>
-                  <td className="num">{money(s.monto)}</td>
-                  <td className="num">{s.plazo_meses}</td>
-                  <td className="num">{s.rds}%</td>
-                  <td style={{ fontWeight: '700' }}>{s.score}</td>
-                  <td><RoleBadge role={s.nivel_aprobacion} /></td>
-                  <td><RiskBadge semaforo={s.semaforo_rds} /></td>
-                  <td><StatusBadge estado={s.estado} /></td>
-                </tr>
-              ))}
-              {items.length === 0 && (
+              {filteredItems.map((s) => {
+                return (
+                  <tr
+                    key={s.id}
+                    className={sel?.id === s.id ? 'sel' : ''}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setSel(s)}
+                    onDoubleClick={() => abrir(s.id)}
+                  >
+                    <td><span style={{ fontSize: '11px', color: 'var(--c-text-soft)' }}>{s.id.split('-')[0]}</span></td>
+                    <td style={{ fontWeight: '600', color: 'var(--c-primary-dark)' }}>{s.cliente}</td>
+                    <td className="num">{money(s.monto)}</td>
+                    <td className="num">{s.plazo_meses}</td>
+                    <td className="num">{s.rds}%</td>
+                    <td style={{ fontWeight: '700' }}>{s.score}</td>
+                    <td><RoleBadge role={s.nivel_aprobacion} /></td>
+                    <td><RiskBadge semaforo={s.semaforo_rds} /></td>
+                    <td><StatusBadge estado={s.estado} /></td>
+                  </tr>
+                )
+              })}
+              {filteredItems.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="page-subtitle" style={{ padding: 20 }}>
-                    No hay solicitudes pendientes.
+                  <td colSpan={9} className="page-subtitle" style={{ padding: 20, textAlign: 'center' }}>
+                    No hay solicitudes para mostrar en esta bandeja.
                   </td>
                 </tr>
               )}
@@ -149,14 +196,6 @@ export default function SolicitudesBandejaPage() {
           </table>
         )}
       </div>
-
-      <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
-        <BBVAButton disabled={!sel} onClick={() => abrir(sel?.id)}>
-          <ClipboardList size={18} style={{ marginRight: '8px', verticalAlign: '-3px' }} />
-          Revisar y Decidir
-        </BBVAButton>
-      </div>
     </div>
   )
 }
-

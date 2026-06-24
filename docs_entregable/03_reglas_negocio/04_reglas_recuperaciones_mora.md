@@ -2,6 +2,9 @@
 
 # Reglas de Recuperaciones y Mora — BBVA Perú Simulado
 
+> [!IMPORTANT]
+> **Aclaración obligatoria:** Estas reglas son una simulación académica basada en información pública de BBVA Perú y criterios SBS. No representan políticas internas oficiales de BBVA Perú.
+
 ## Introducción
 
 El presente documento describe las reglas de negocio aplicadas al módulo de **Recuperaciones y Mora** del sistema integrado **BBVA Perú Simulado**.
@@ -33,11 +36,11 @@ Para el proyecto se utilizan las siguientes bandas de mora:
 | Banda      |  Días de atraso | Descripción                                            |
 | ---------- | --------------: | ------------------------------------------------------ |
 | Al día     |          0 días | Crédito sin atraso.                                    |
-| Preventiva |      1 a 6 días | Atraso inicial. Se recomienda contacto preventivo.     |
-| Temprana   |     7 a 30 días | Mora inicial que requiere seguimiento.                 |
-| Tardía     |   31 a 120 días | Mora avanzada con mayor riesgo de incumplimiento.      |
-| Judicial   |  121 a 180 días | Caso derivable a cobranza judicial.                    |
-| Castigo    | Más de 180 días | Crédito candidato a castigo contable en la simulación. |
+| Preventiva |      1 a 8 días | Normal / Alerta temprana (Hasta 8 días).               |
+| Temprana   |     9 a 30 días | Con Problemas Potenciales (CPP) (9 a 30 días).         |
+| Tardía     |   31 a 120 días | Deficiente / Dudoso (31 a 120 días).                   |
+| Judicial   |  121 a 180 días | Cobranza judicial / Pérdida (121 a 180 días).          |
+| Castigo    | Más de 180 días | Castigo contable en la simulación académica.           |
 
 ---
 

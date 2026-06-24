@@ -2,6 +2,9 @@
 
 # Reglas de Aprobación y Desembolso — BBVA Perú Simulado
 
+> [!IMPORTANT]
+> **Aclaración obligatoria:** Estas reglas son una simulación académica basada en información pública de BBVA Perú y criterios SBS. No representan políticas internas oficiales de BBVA Perú.
+
 ## Introducción
 
 El presente documento define las reglas aplicadas en el Core Bancario para aprobar, rechazar y desembolsar solicitudes de préstamo generadas desde Homebanking.

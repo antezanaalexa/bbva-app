@@ -21,12 +21,23 @@ export const PERMISOS = {
   ver_productividad: ['administrador', 'jefe_regional', 'gerencia'],
   // Dashboard institucional (toda la cartera/desembolsos). El asesor ve solo SU cartera.
   ver_dashboard_institucional: ['administrador', 'jefe_regional', 'gerencia', 'operaciones'],
+  // Bandeja de solicitudes: asesores ven solo las suyas; demás roles ven todas.
+  ver_bandeja_solicitudes: ['asesor', 'administrador', 'jefe_regional', 'riesgos', 'analista', 'gerencia'],
 }
 
 /** ¿El rol puede ejecutar la acción? */
 export function puede(rol, accion) {
   return (PERMISOS[accion] || []).includes(rol)
 }
+
+/**
+ * ¿El rol puede ver la bandeja de solicitudes?
+ * El asesor siempre puede verla (aunque el backend solo le devolverá las suyas).
+ */
+export function puedeVerBandeja(rol) {
+  return puede(rol, 'ver_bandeja_solicitudes')
+}
+
 
 // Estados de dsolicitud (espejo de rep_solicitudes).
 export const ESTADO = {

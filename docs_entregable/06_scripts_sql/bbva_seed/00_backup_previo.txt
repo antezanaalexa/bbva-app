@@ -1,0 +1,15 @@
+========================================================================
+PRECAUCIÓN ANTES DE EJECUTAR LOS SCRIPTS DE LIMPIEZA Y SEED (BBVA)
+========================================================================
+
+Antes de ejecutar los scripts de esta carpeta, asegúrate de tener
+respaldados tus datos históricos si deseas conservarlos en el futuro.
+
+Si necesitas volver al estado del Banco Andino, debes ejecutar:
+
+psql -U postgres -d bd_core_financiero -f "docs_entregable/07_backups/backup_cartera_20260602.sql"
+psql -U postgres -d bd_core_financiero -f "docs_entregable/07_backups/backup_metas_20260602.sql"
+
+Si estás listo para inyectar la data exclusiva del BBVA Simulado,
+puedes proceder con el script 01_limpieza_controlada.sql
+========================================================================

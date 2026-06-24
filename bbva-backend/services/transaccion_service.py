@@ -19,6 +19,10 @@ class TransaccionService:
         if not cuenta_origen:
             raise ValueError("Cuenta origen no encontrada")
 
+        # Verificar que la cuenta de origen pertenece al usuario autenticado
+        if str(cuenta_origen["user_id"]) != str(datos["user_id"]):
+            raise ValueError("La cuenta de origen no pertenece al usuario autenticado")
+
         monto = Decimal(str(datos["monto"]))
         saldo_origen = Decimal(str(cuenta_origen["saldo"]))
 

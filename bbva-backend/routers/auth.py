@@ -34,16 +34,26 @@ def login(datos: LoginRequest):
                 apellidos,
                 correo,
                 rol,
-                estado
+                estado,
+                password_hash
             FROM app_usuarios
             WHERE dni = %s
-              AND password_hash = %s
-        """, (datos.username, datos.password))
+        """, (datos.username,))
 
         usuario = cur.fetchone()
 
         if not usuario:
             raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+
+        # Verificar contraseña encriptada (o en texto plano por compatibilidad temporal si es necesario, pero obligamos Bcrypt)
+        import bcrypt
+        try:
+            if not bcrypt.checkpw(datos.password.encode('utf-8'), usuario["password_hash"].encode('utf-8')):
+                raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+        except ValueError:
+            # Si la base de datos tenía contraseñas en texto plano de pruebas anteriores
+            if datos.password != usuario["password_hash"]:
+                raise HTTPException(status_code=401, detail="Credenciales incorrectas (hash inválido)")
 
         if usuario["estado"] != "activo":
             raise HTTPException(status_code=403, detail="Usuario inactivo")
@@ -85,6 +95,11 @@ def register(datos: RegisterRequest):
                 detail="Ya existe una cuenta asociada a este DNI."
             )
 
+        import bcrypt
+        pwd_bytes = datos.password.encode('utf-8')
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(pwd_bytes, salt).decode('utf-8')
+
         cur.execute("""
             INSERT INTO app_usuarios (
                 dni,
@@ -109,7 +124,7 @@ def register(datos: RegisterRequest):
             datos.nombres,
             datos.apellidos,
             datos.correo,
-            datos.password
+            hashed_password
         ))
 
         usuario = cur.fetchone()

@@ -73,6 +73,9 @@ export default function SolicitudDetallePage() {
   const esJefe = user?.rol === 'jefe_regional'
   const esRiesgos = user?.rol === 'riesgos'
 
+  // Propietario de la solicitud (id del usuario que la creó)
+  const esPropietario = solicitud?.user_id === user?.pkpersonal
+
   const nivel = solicitud.nivel_aprobacion
   let puedeAprobar = false
   if (nivel === 'asesor' && (esAsesor || esAdmin || esJefe || esRiesgos)) puedeAprobar = true
@@ -80,7 +83,7 @@ export default function SolicitudDetallePage() {
   if (nivel === 'jefe_regional' && (esJefe || esRiesgos)) puedeAprobar = true
   if (nivel === 'riesgos' && esRiesgos) puedeAprobar = true
 
-  const puedeDesembolsar = (esAsesor || esAdmin)
+  const puedeDesembolsar = (esAsesor || esAdmin || esJefe)
 
   const getSemaforoColor = (color) => {
     if (color === 'verde') return '#16a34a'

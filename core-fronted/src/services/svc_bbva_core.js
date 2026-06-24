@@ -11,6 +11,12 @@ export const bbvaCoreService = {
     return res.data
   },
 
+  getSolicitudesMias: async () => {
+    const res = await api.get('/api/core/solicitudes/mias')
+    return res.data
+  },
+
+
   getSolicitudById: async (id) => {
     const res = await api.get(`/api/core/solicitudes/${id}`)
     return res.data

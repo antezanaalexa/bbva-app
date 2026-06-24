@@ -12,12 +12,12 @@ const SECCIONES = [
   {
     titulo: 'Otorgamiento de créditos',
     items: [
-      { to: '/solicitudes', label: 'Bandeja de solicitudes', Icon: Inbox },
-      { to: '/scoring', label: '1. Pre-solicitud', Icon: Gauge },
-      { to: '/solicitudes/nueva', label: '2. Registro de solicitud', Icon: FilePlus2 },
-      { to: '/solicitudes?estado=6', label: '3. Propuesta y comité', Icon: Users, estado: '6' },
-      { to: '/solicitudes?estado=2', label: '4. Aprobación y desembolso', Icon: BadgeCheck, estado: '2' },
-      { to: '/cartera', label: '5. Mora y recuperación', Icon: AlertTriangle },
+      { to: '/solicitudes', label: 'Bandeja de solicitudes', Icon: Inbox, accion: 'ver_bandeja_solicitudes' },
+      { to: '/scoring', label: '1. Pre-solicitud', Icon: Gauge, accion: 'crear_solicitud' },
+      { to: '/solicitudes/nueva', label: '2. Registro de solicitud', Icon: FilePlus2, accion: 'crear_solicitud' },
+      { to: '/solicitudes?estado=6', label: '3. Propuesta y comité', Icon: Users, estado: '6', roles: ['administrador', 'jefe_regional', 'gerencia'] },
+      { to: '/solicitudes?estado=2', label: '4. Aprobación y desembolso', Icon: BadgeCheck, estado: '2', roles: ['administrador', 'jefe_regional', 'gerencia'] },
+      { to: '/cartera', label: '5. Cartera del Asesor', Icon: AlertTriangle, accion: 'crear_solicitud' },
     ],
   },
   {
@@ -48,7 +48,14 @@ export default function Sidebar() {
   const location = useLocation()
 
   // Oculta secciones cuyo permiso (accion) no tenga el rol del usuario.
-  const visibles = SECCIONES.filter((sec) => !sec.accion || puede(user?.rol, sec.accion))
+  const visibles = SECCIONES.map((sec) => ({
+    ...sec,
+    items: sec.items.filter((item) => {
+      if (item.accion) return puede(user?.rol, item.accion)
+      if (item.roles) return item.roles.includes(user?.rol)
+      return true
+    })
+  })).filter((sec) => (!sec.accion || puede(user?.rol, sec.accion)) && sec.items.length > 0)
 
   return (
     <aside className="sidebar" style={{ background: '#fff', color: 'var(--c-primary-dark)', width: '280px', padding: '24px 16px', borderRight: '1px solid var(--c-border)', display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto' }}>
@@ -58,11 +65,11 @@ export default function Sidebar() {
 
       <div style={{ background: '#F3F4F6', borderRadius: '16px', padding: '16px', margin: '0 14px 24px 14px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--c-primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-          {user?.nombres?.[0] || 'U'}
+          {user?.nombre?.[0] || 'U'}
         </div>
         <div>
           <div style={{ fontSize: '11px', color: 'var(--c-text-soft)' }}>Bienvenido,</div>
-          <div style={{ fontSize: '15px', fontWeight: 'bold', color: 'var(--c-primary-dark)' }}>{user?.nombres || 'Usuario'}</div>
+          <div style={{ fontSize: '15px', fontWeight: 'bold', color: 'var(--c-primary-dark)' }}>{user?.nombre || 'Usuario'}</div>
         </div>
       </div>
 

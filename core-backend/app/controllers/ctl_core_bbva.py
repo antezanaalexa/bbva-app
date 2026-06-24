@@ -27,6 +27,7 @@ def get_solicitudes(db: Session):
     for sol, user in solicitudes:
         result.append({
             "id": sol.id,
+            "user_id": sol.user_id,
             "cliente": f"{user.nombres} {user.apellidos}",
             "dni": user.dni,
             "monto": float(sol.monto),
@@ -40,6 +41,34 @@ def get_solicitudes(db: Session):
         })
     return result
 
+def get_solicitudes_por_nivel(db: Session, nivel: str):
+    """Retorna solo las solicitudes cuyo nivel_aprobacion coincida con el nivel dado."""
+    solicitudes = (
+        db.query(SolicitudPrestamo, AppUsuario)
+        .join(AppUsuario)
+        .filter(func.lower(SolicitudPrestamo.nivel_aprobacion) == nivel.lower())
+        .order_by(SolicitudPrestamo.created_at.desc())
+        .all()
+    )
+    result = []
+    for sol, user in solicitudes:
+        result.append({
+            "id": sol.id,
+            "user_id": sol.user_id,
+            "cliente": f"{user.nombres} {user.apellidos}",
+            "dni": user.dni,
+            "monto": float(sol.monto),
+            "plazo_meses": sol.plazo_meses,
+            "rds": float(sol.rds),
+            "semaforo_rds": sol.semaforo_rds,
+            "score": sol.score,
+            "nivel_aprobacion": sol.nivel_aprobacion,
+            "estado": sol.estado,
+            "created_at": sol.created_at
+        })
+    return result
+
+
 def get_solicitud(db: Session, solicitud_id: str):
     solicitud = db.query(SolicitudPrestamo).filter(SolicitudPrestamo.id == solicitud_id).first()
     if not solicitud:
@@ -48,6 +77,7 @@ def get_solicitud(db: Session, solicitud_id: str):
     return {
         "solicitud": {
             "id": solicitud.id,
+            "user_id": solicitud.user_id,
             "monto": float(solicitud.monto),
             "plazo_meses": solicitud.plazo_meses,
             "tasa_anual": float(solicitud.tasa_anual),
@@ -84,9 +114,13 @@ def desembolsar(db: Session, solicitud_id: str):
     if not solicitud or solicitud.estado != 'aprobado':
         return False, "Solicitud no encontrada o no está en estado aprobado."
     
-    cuenta = db.query(Cuenta).filter(Cuenta.user_id == solicitud.user_id).first()
+    if solicitud.cuenta_destino_id:
+        cuenta = db.query(Cuenta).filter(Cuenta.id == solicitud.cuenta_destino_id).first()
+    else:
+        cuenta = db.query(Cuenta).filter(Cuenta.user_id == solicitud.user_id).first()
+        
     if not cuenta:
-        return False, "Cliente no tiene cuenta asociada."
+        return False, "Cliente no tiene cuenta asociada para desembolsar."
     
     # Actualizar saldo
     cuenta.saldo = float(cuenta.saldo) + float(solicitud.monto)

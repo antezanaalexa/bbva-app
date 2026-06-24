@@ -22,9 +22,10 @@ class CreditoRepository:
                 semaforo_rds,
                 score,
                 nivel_aprobacion,
-                estado
+                estado,
+                cuenta_destino_id
             )
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             RETURNING *
     """, (
             str(datos["user_id"]),
@@ -38,7 +39,8 @@ class CreditoRepository:
             datos["semaforo_rds"],
             datos["score"],
             datos["nivel_aprobacion"],
-            datos["estado"]
+            datos["estado"],
+            datos.get("cuenta_destino_id")
         ))
 
         data = cur.fetchone()

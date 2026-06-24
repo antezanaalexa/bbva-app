@@ -2,6 +2,9 @@
 
 # Reglas de RDS, Score y Semáforo — BBVA Perú Simulado
 
+> [!IMPORTANT]
+> **Aclaración obligatoria:** Estas reglas son una simulación académica basada en información pública de BBVA Perú y criterios SBS. No representan políticas internas oficiales de BBVA Perú.
+
 ## Introducción
 
 Este documento describe las reglas utilizadas para evaluar preliminarmente una solicitud de préstamo en el sistema **BBVA Perú Simulado**. La evaluación se basa en tres elementos principales:
@@ -138,12 +141,12 @@ Estos datos permiten tomar una decisión más informada al aprobar, rechazar o d
 
 | Campo               |     Valor |
 | ------------------- | --------: |
-| Monto               | S/ 10,000 |
-| Plazo               |  24 meses |
-| Tasa anual          |     18.5% |
-| Cuota mensual       | S/ 501.66 |
+| Monto               |  S/ 5,000 |
+| Plazo               |  12 meses |
+| Tasa anual (TEA)    |    41.20% |
+| Cuota mensual       | S/ 500.83 |
 | Ingresos mensuales  |  S/ 3,000 |
-| RDS                 |    16.72% |
+| RDS                 |    16.69% |
 | Semáforo            |     Verde |
 | Score               |       100 |
 | Nivel de aprobación |    Asesor |

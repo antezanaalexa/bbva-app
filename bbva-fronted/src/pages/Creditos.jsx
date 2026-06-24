@@ -17,10 +17,12 @@ export default function Creditos() {
   const [tab, setTab] = useState("activos");
   const [solicitudes, setSolicitudes] = useState([]);
   const [cronograma, setCronograma] = useState([]);
+  const [cuentas, setCuentas] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [simMonto, setSimMonto] = useState(10000);
   const [simPlazo, setSimPlazo] = useState(24);
+  const [simProposito, setSimProposito] = useState("consumo");
   const [simResultado, setSimResultado] = useState(null);
   const [simCargando, setSimCargando] = useState(false);
 
@@ -41,6 +43,16 @@ export default function Creditos() {
     }
   };
 
+  const cargarCuentas = async () => {
+    if (!user) return;
+    try {
+      const res = await api.get(`/api/cuentas/${user.id}`);
+      setCuentas(res.data.data || []);
+    } catch (err) {
+      console.error("Error cargando cuentas:", err);
+    }
+  };
+
   const simular = async () => {
     try {
       setSimCargando(true);
@@ -48,7 +60,7 @@ export default function Creditos() {
       const res = await api.post("/api/creditos/simular", {
         monto: simMonto,
         plazo_meses: simPlazo,
-        tasa_anual: 18.5,
+        proposito: simProposito,
       });
 
       setSimResultado(res.data.data);
@@ -56,7 +68,7 @@ export default function Creditos() {
       const cronRes = await api.post("/api/creditos/cronograma", {
         monto: simMonto,
         plazo_meses: simPlazo,
-        tasa_anual: 18.5,
+        proposito: simProposito,
       });
 
       setCronograma(cronRes.data.data || []);
@@ -69,11 +81,12 @@ export default function Creditos() {
 
   useEffect(() => {
     cargarSolicitudes();
+    cargarCuentas();
   }, [user]);
 
   useEffect(() => {
     simular();
-  }, [simMonto, simPlazo]);
+  }, [simMonto, simPlazo, simProposito]);
 
   return (
     <DashboardShell title="Créditos" nombreUsuario={nombreUsuario}>
@@ -173,14 +186,33 @@ export default function Creditos() {
               onChange={(e) => setSimPlazo(Number(e.target.value))}
             />
 
+            <div className="block mb-8">
+              <span className="block text-[#072146] font-bold mb-2">Propósito del crédito</span>
+              <select
+                value={simProposito}
+                onChange={(e) => setSimProposito(e.target.value)}
+                className="input-bbva w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 font-bold outline-none"
+              >
+                <option value="consumo">Consumo / Libre disponibilidad (TEA 41.20%)</option>
+                <option value="educacion">Educación (TEA 28.00% simulada)</option>
+                <option value="salud">Salud (TEA 30.00% simulada)</option>
+                <option value="vivienda">Vivienda (TEA 11.50% simulada)</option>
+                <option value="negocio">Negocio (TEA 35.00% simulada)</option>
+              </select>
+            </div>
+
             {simResultado && (
               <div className="bg-[#f4f8ff] rounded-3xl p-6 mb-8 grid md:grid-cols-2 gap-5">
                 <ResultBox label="Cuota mensual" value={`S/ ${simResultado.cuota_mensual}`} />
                 <ResultBox label="Total a pagar" value={`S/ ${simResultado.total_pagar}`} />
                 <ResultBox label="Interés total" value={`S/ ${simResultado.total_interes}`} />
-                <ResultBox label="TEA referencial" value="18.5%" />
+                <ResultBox label="TEA referencial" value={`${simResultado.tasa_anual}%`} />
               </div>
             )}
+
+            <p className="text-xs text-gray-400 mb-6 italic text-center">
+              Esta simulación es referencial y está sujeta a evaluación crediticia. El cálculo de cuota mensual se realiza con la fórmula de amortización francesa (criterio SBS) y no incluye ITF ni seguro de desgravamen.
+            </p>
 
             <button
               onClick={() => setTab("solicitar")}
@@ -223,6 +255,7 @@ export default function Creditos() {
       {tab === "solicitar" && (
         <SolicitarCredito
           user={user}
+          cuentas={cuentas}
           simMonto={simMonto}
           simPlazo={simPlazo}
           onExito={async () => {
@@ -235,12 +268,13 @@ export default function Creditos() {
   );
 }
 
-function SolicitarCredito({ user, simMonto, simPlazo, onExito }) {
+function SolicitarCredito({ user, cuentas, simMonto, simPlazo, onExito }) {
   const [form, setForm] = useState({
     monto: simMonto,
     plazo: simPlazo,
     motivo: "consumo",
     ingresos: "",
+    cuenta_destino_id: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -252,8 +286,8 @@ function SolicitarCredito({ user, simMonto, simPlazo, onExito }) {
   };
 
   const enviar = async () => {
-    if (!form.monto || !form.ingresos || !form.motivo) {
-      setError("Completa todos los campos.");
+    if (!form.monto || !form.ingresos || !form.motivo || !form.cuenta_destino_id) {
+      setError("Completa todos los campos, incluyendo la cuenta de depósito.");
       return;
     }
 
@@ -265,9 +299,9 @@ function SolicitarCredito({ user, simMonto, simPlazo, onExito }) {
         user_id: user.id,
         monto: Number(form.monto),
         plazo_meses: Number(form.plazo),
-        tasa_anual: 18.5,
         proposito: form.motivo,
         ingresos_mensuales: Number(form.ingresos),
+        cuenta_destino_id: form.cuenta_destino_id,
       });
 
       if (response.data.success === false) {
@@ -354,15 +388,43 @@ function SolicitarCredito({ user, simMonto, simPlazo, onExito }) {
           />
         </InputLabel>
 
-        <InputLabel label="Propósito del crédito">
-          <select name="motivo" value={form.motivo} onChange={handleChange} className="input-bbva">
-            <option value="consumo">Consumo</option>
-            <option value="educacion">Educación</option>
-            <option value="salud">Salud</option>
-            <option value="vivienda">Vivienda</option>
-            <option value="negocio">Negocio</option>
+        <InputLabel label="Cuenta de depósito para desembolso">
+          <select
+            name="cuenta_destino_id"
+            value={form.cuenta_destino_id}
+            onChange={handleChange}
+            className="input-bbva"
+          >
+            <option value="">Selecciona una cuenta activa</option>
+            {cuentas.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.tipo_cuenta} - {c.numero_cuenta} ({c.moneda})
+              </option>
+            ))}
           </select>
         </InputLabel>
+
+        <InputLabel label="Propósito del crédito">
+          <select name="motivo" value={form.motivo} onChange={handleChange} className="input-bbva">
+            <option value="consumo">Consumo / Libre disponibilidad (TEA 41.20%)</option>
+            <option value="educacion">Educación (TEA 28.00% simulada)</option>
+            <option value="salud">Salud (TEA 30.00% simulada)</option>
+            <option value="vivienda">Vivienda (TEA 11.50% simulada)</option>
+            <option value="negocio">Negocio (TEA 35.00% simulada)</option>
+          </select>
+        </InputLabel>
+
+        <div className="mb-6 flex items-start gap-3">
+          <input
+            type="checkbox"
+            id="acepta_contratos"
+            className="mt-1"
+            defaultChecked={true}
+          />
+          <label htmlFor="acepta_contratos" className="text-sm text-gray-500">
+            Acepto los términos y condiciones de la Solicitud y el Contrato de Préstamo BBVA.
+          </label>
+        </div>
 
         <button
           onClick={enviar}
@@ -450,7 +512,7 @@ function CreditInfoCard() {
 
       <div className="bg-white/10 rounded-2xl p-5">
         <p className="text-white/50 text-sm mb-1">Tasa referencial</p>
-        <p className="text-3xl font-black">18.5% anual</p>
+        <p className="text-3xl font-black">TCEA Máxima 42.15%</p>
       </div>
     </aside>
   );

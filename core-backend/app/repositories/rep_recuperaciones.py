@@ -20,8 +20,8 @@ PERIODO = 202512
 BANDA_SQL = """
   CASE
     WHEN f.diasatrasocredito = 0 THEN 'AL_DIA'
-    WHEN f.diasatrasocredito BETWEEN 1 AND 6 THEN 'PREVENTIVA'
-    WHEN f.diasatrasocredito BETWEEN 7 AND 30 THEN 'TEMPRANA'
+    WHEN f.diasatrasocredito BETWEEN 1 AND 8 THEN 'PREVENTIVA'
+    WHEN f.diasatrasocredito BETWEEN 9 AND 30 THEN 'TEMPRANA'
     WHEN f.diasatrasocredito BETWEEN 31 AND 120 THEN 'TARDIA'
     WHEN f.diasatrasocredito BETWEEN 121 AND 180 THEN 'JUDICIAL'
     ELSE 'CASTIGO'
@@ -88,7 +88,7 @@ def _credito_por_cod(db: Session, codcuentacredito: str):
 
 def _banda_de_dias(d: int) -> str:
     if d is None or d == 0: return "AL_DIA"
-    if d <= 6: return "PREVENTIVA"
+    if d <= 8: return "PREVENTIVA"
     if d <= 30: return "TEMPRANA"
     if d <= 120: return "TARDIA"
     if d <= 180: return "JUDICIAL"

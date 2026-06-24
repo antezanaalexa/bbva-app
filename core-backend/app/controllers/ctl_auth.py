@@ -4,57 +4,11 @@ from app.core.cfg_security import verify_password, create_access_token
 from app.core.cfg_roles import rol_desde_cargo
 
 def login(db: Session, numerodni: str, password: str):
-    # --- INICIO INTEGRACION BBVA: Intercepción de usuarios de prueba ---
-    test_users = {
-        "11111111": {"rol": "asesor", "cargo": "Asesor de Negocios", "nombre": "Asesor de Prueba"},
-        "11111112": {"rol": "administrador", "cargo": "Administrador de Agencia", "nombre": "Administrador de Prueba"},
-        "11111113": {"rol": "jefe_regional", "cargo": "Jefe de Negocios Regional", "nombre": "Jefe Regional de Prueba"},
-        "11111114": {"rol": "riesgos", "cargo": "Jefe de Riesgos", "nombre": "Riesgos de Prueba"}
-    }
-    
-    ASIGNACIONES_PRUEBA = {
-        "11111111": {"pkasesor": 31, "codasesor": "AS0031"},
-        "11111112": {"pkasesor": 36, "codasesor": "AS0036"},
-        "11111113": {"pkasesor": 12, "codasesor": "AS0012"},
-        "11111114": {"pkasesor": 18, "codasesor": "AS0018"}
-    }
-
-    if numerodni in test_users:
-        if password != "bbva123" and password != numerodni:
-            return None
-        
-        user_data = test_users[numerodni]
-        asig = ASIGNACIONES_PRUEBA.get(numerodni, {})
-        pkasesor = asig.get("pkasesor") if user_data["rol"] == "asesor" else None
-        codasesor = asig.get("codasesor") if user_data["rol"] == "asesor" else None
-
-        token = create_access_token({
-            "sub":         numerodni,
-            "pkpersonal":  int(numerodni),
-            "pkasesor":    pkasesor,
-            "codasesor":   codasesor,
-            "nombre":      user_data["nombre"],
-            "rol":         user_data["rol"],
-            "cargo":       user_data["cargo"],
-            "codagencia":  "0001",
-        })
-        return {
-            "access_token": token,
-            "token_type":   "bearer",
-            "codpersonal":  numerodni,
-            "pkasesor":     pkasesor,
-            "codasesor":    codasesor,
-            "nombre":       user_data["nombre"],
-            "rol":          user_data["rol"],
-            "codagencia":   "0001",
-        }
-    # --- FIN INTEGRACION BBVA ---
-
-    # DPERSONAL guarda el DNI y el nombre. El cargo real se obtiene de la tabla
+    # El login real (leemos DPERSONAL y validamos el password_hash)    # DPERSONAL guarda el DNI y el nombre. El cargo real se obtiene de la tabla
     # puente dpersonalcargo -> dcargopersonal, y el asesor de la tabla puente
     # dpersonalasesor -> dasesor (dpersonal y dasesor no se cruzan naturalmente).
     sql = text("""
-        SELECT p.pkpersonal, p.codpersonal, p.nombre,
+        SELECT p.pkpersonal, p.codpersonal, p.nombre, p.password_hash,
                cp.codcargopersonal,
                cp.descargopersonal,
                a.pkasesor, a.codasesor
@@ -70,9 +24,8 @@ def login(db: Session, numerodni: str, password: str):
     if not row:
         return None
 
-    # En desarrollo: password = numerodni (simplificado)
-    # En producción: verify_password(password, row.password_hash)
-    if password != numerodni:
+    # Verificación de contraseña real (encriptada en BD)
+    if not row.password_hash or not verify_password(password, row.password_hash):
         return None
 
     rol        = rol_desde_cargo(row.codcargopersonal)

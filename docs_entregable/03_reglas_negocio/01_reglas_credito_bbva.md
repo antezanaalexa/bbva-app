@@ -2,6 +2,9 @@
 
 # Reglas de Negocio de Crédito — BBVA Perú Simulado
 
+> [!IMPORTANT]
+> **Aclaración obligatoria:** Estas reglas son una simulación académica basada en información pública de BBVA Perú y criterios SBS. No representan políticas internas oficiales de BBVA Perú.
+
 ## Introducción
 
 El presente documento describe las reglas de negocio aplicadas en el módulo de créditos del sistema integrado **BBVA Perú Simulado**. Estas reglas permiten que el Homebanking y el Core Bancario trabajen de forma integrada sobre la base de datos `bd_core_financiero`.
@@ -84,13 +87,15 @@ Si los ingresos son menores a S/ 700, la solicitud debe considerarse no viable o
 
 ## Regla 5 — Cálculo de cuota mensual
 
-La cuota mensual se calcula a partir de:
+La cuota mensual se calcula a partir del método de amortización francés (de acuerdo a los criterios de la SBS):
 
 * Monto solicitado.
 * Plazo en meses.
-* Tasa anual referencial.
+* Tasa Efectiva Anual (TEA).
 
-La fórmula usada corresponde al sistema de cuota fija, donde el cliente paga una cuota mensual estimada durante todo el plazo.
+Fórmula:
+* Tasa Efectiva Mensual: `TEM = (1 + TEA/100)^(1/12) - 1`
+* Cuota Mensual: `Cuota = Monto * (TEM * (1 + TEM)^Plazo) / ((1 + TEM)^Plazo - 1)`
 
 ---
 
