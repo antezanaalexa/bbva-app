@@ -41,8 +41,8 @@ def main():
             pk = p[0]
             dni = str(p[1]).strip()
             
-            # La contraseña inicial será el DNI
-            hash_generado = get_password_hash(dni)
+            # La contraseña inicial será Bv@<DNI>
+            hash_generado = get_password_hash(f"Bv@{dni}")
             
             # Actualizar en BD
             db.execute(text("UPDATE dpersonal SET password_hash = :hash WHERE pkpersonal = :pk"),

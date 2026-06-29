@@ -22,6 +22,7 @@ Sistema de **Core Bancario + Homebanking** desarrollado con FastAPI (Python) y R
 | `10_powerbi_reporteria/` | Guía Power BI + consultas SQL + modelo de datos |
 | `11_documento_final/` | Documento técnico-funcional completo del proyecto |
 | `12_referencias_proyecto_base/` | Código base del proyecto Andino referenciado |
+| `13_documentacion_drive_final/` | Carpeta consolidada y estructurada para subir al Google Drive de sustentación |
 
 ---
 
@@ -79,13 +80,16 @@ npm run dev
 ### Core Bancario (colaboradores)
 | Rol | DNI | Contraseña | Permisos clave |
 |---|---|---|---|
-| Asesor de Negocios | `11111111` | `11111111` | Crear solicitudes, ver su propia bandeja, aprobar/rechazar las propias |
-| Administrador | `11111112` | `11111112` | Bandeja completa, aprobar/rechazar todas, desembolsar |
-| Jefe Regional | `11111113` | `11111113` | Bandeja completa, aprobar/rechazar todas |
-| Jefe de Riesgos | `11111114` | `11111114` | Bandeja completa, opinión de riesgos |
+| Asesor de Negocios | `11111111` | `************` | Crear solicitudes, ver su propia bandeja, aprobar/rechazar las propias |
+| Administrador | `11111112` | `************` | Bandeja completa, aprobar/rechazar todas, desembolsar |
+| Jefe Regional | `11111113` | `************` | Bandeja completa, aprobar/rechazar todas |
+| Jefe de Riesgos | `11111114` | `************` | Bandeja completa, opinión de riesgos |
 
 ### Homebanking (clientes)
-Registrarse en http://localhost:5173 con cualquier DNI y correo electrónico.
+* **Cliente Regular (Angela Aguilar):** DNI/Usuario: `75915758` / Contraseña: `************`
+* **Cliente Digital (Johnny Rodriguez):** DNI/Usuario: `22222222` / Contraseña: `************`
+
+*(Las contraseñas reales e individuales de exposición para la demo en local se encuentran registradas de forma segura en el archivo local privado `docs_entregable/08_manual_instalacion/05_credenciales_prueba_PRIVADO.md`, el cual está excluido de GitHub por seguridad).*
 
 ---
 

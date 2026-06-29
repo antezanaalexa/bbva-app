@@ -1,8 +1,19 @@
-node_modules
+node_modules/
 .env
-dist
-build
-__pycache__
-*.log
-.vscode
+.env.local
 venv/
+.venv/
+__pycache__/
+*.pyc
+dist/
+build/
+*.log
+*.dump
+*.backup
+token.json
+.vscode/
+
+# Archivos de seguridad locales/privados
+docs_entregable/08_manual_instalacion/05_credenciales_prueba_PRIVADO.md
+docs_entregable/07_backups/passwords_backup_before_secure.json
+docs_entregable/07_backups/temp_new_credentials.json

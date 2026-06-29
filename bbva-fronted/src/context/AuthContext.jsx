@@ -46,6 +46,7 @@ export function AuthProvider({ children }) {
         id: result.user.id,
         pkusuario: result.user.pkusuario,
         email: result.user.email,
+        token: result.access_token,
         user_metadata: {
           nombres: result.user.nombres,
           dni: result.user.dni,
@@ -105,6 +106,7 @@ const signUp = async (_email, password, metadata) => {
       id: result.user.id,
       pkusuario: result.user.pkusuario,
       email: result.user.email,
+      token: result.access_token,
       user_metadata: {
         nombres: result.user.nombres,
         dni: result.user.dni,

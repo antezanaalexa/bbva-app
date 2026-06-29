@@ -174,7 +174,7 @@ python ..\docs_entregable\06_scripts_sql\bbva_seed\05_seed_cartera_powerbi.py
 
 En el Swagger del Core, prueba:
 - `GET /api/core/dashboard/kpis` → debe retornar JSON con KPIs
-- `POST /api/auth/login` → con `{"dni": "11111111", "password": "11111111"}`
+- `POST /api/auth/login` → con `{"dni": "11111111", "password": "************"}`
 
 ---
 
@@ -184,14 +184,17 @@ En el Swagger del Core, prueba:
 
 | Rol | DNI | Contraseña | Acceso |
 |---|---|---|---|
-| **Asesor de Negocios** | `11111111` | `11111111` | Su propia bandeja, aprobar/rechazar propias solicitudes, nueva solicitud, cartera, recuperaciones |
-| **Administrador de Agencia** | `11111112` | `11111112` | Bandeja completa, aprobar/rechazar todas, desembolsar, ahorros |
-| **Jefe Regional** | `11111113` | `11111113` | Bandeja completa, aprobar/rechazar todas, dashboard institucional |
-| **Jefe de Riesgos** | `11111114` | `11111114` | Bandeja completa, opinión de riesgos, recuperaciones |
+| **Asesor de Negocios** | `11111111` | `************` | Su propia bandeja, aprobar/rechazar propias solicitudes, nueva solicitud, cartera, recuperaciones |
+| **Administrador de Agencia** | `11111112` | `************` | Bandeja completa, aprobar/rechazar todas, desembolsar, ahorros |
+| **Jefe Regional** | `11111113` | `************` | Bandeja completa, aprobar/rechazar todas, dashboard institucional |
+| **Jefe de Riesgos** | `11111114` | `************` | Bandeja completa, opinión de riesgos, recuperaciones |
 
 ### Homebanking — http://localhost:5173
 
-Registrar un cliente nuevo desde la pantalla de inicio o usar cualquier usuario existente en `app_usuarios`.
+* **Cliente Regular (Angela Aguilar):** DNI/Usuario: `75915758` / Contraseña: `************`
+* **Cliente Digital (Johnny Rodriguez):** DNI/Usuario: `22222222` / Contraseña: `************`
+
+*(Las contraseñas reales e individuales de exposición para la demo en local se encuentran registradas de forma segura en el archivo local privado `docs_entregable/08_manual_instalacion/05_credenciales_prueba_PRIVADO.md`, el cual está excluido de GitHub por seguridad).*
 
 ---
 

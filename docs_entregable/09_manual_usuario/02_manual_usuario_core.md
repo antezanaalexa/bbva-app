@@ -6,7 +6,8 @@
 ## Acceso al sistema
 
 **URL:** http://localhost:5174  
-**Credenciales:** DNI como usuario y contraseña (para usuarios de prueba)
+**Credenciales:** DNI como usuario y contraseñas individuales seguras.
+*(Para ver las contraseñas reales locales de demostración, consulta el archivo privado `docs_entregable/08_manual_instalacion/05_credenciales_prueba_PRIVADO.md`, el cual está excluido de Git por seguridad. En la documentación pública se muestran censuradas).*
 
 ---
 

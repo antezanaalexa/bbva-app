@@ -19,10 +19,8 @@ def main():
     # Cantidad de clientes a generar
     NUM_CLIENTES = 100
     
-    # Contraseña por defecto para todos
-    pwd_bytes = "bbva123".encode('utf-8')
+    # Las contraseñas serán individuales y seguirán el patrón Cli@<DNI>
     salt = bcrypt.gensalt()
-    hashed_password = bcrypt.hashpw(pwd_bytes, salt).decode('utf-8')
 
     insertados = 0
     
@@ -74,6 +72,8 @@ def main():
             
             # 2. Insertar en app_usuarios (BBVA Homebanking)
             user_id = str(uuid.uuid4())
+            pwd_bytes = f"Cli@{u['dni']}".encode('utf-8')
+            hashed_password = bcrypt.hashpw(pwd_bytes, salt).decode('utf-8')
             sql_app = text("""
                 INSERT INTO app_usuarios (
                     id, pkcliente, dni, nombres, apellidos,
@@ -102,7 +102,7 @@ def main():
 
     db.commit()
     print(f"Se insertaron exitosamente {insertados} clientes en dcliente y app_usuarios.")
-    print("Contrasena por defecto para login: bbva123")
+    print("Contraseña por defecto para login: Cli@<DNI>")
     print("=======================================")
 
 if __name__ == "__main__":

@@ -26,14 +26,14 @@ El objetivo es evidenciar que las funcionalidades se encuentran separadas según
 
 | Sistema          | Rol           | Usuario        | Contraseña            |
 | ---------------- | ------------- | -------------- | --------------------- |
-| Core Bancario    | Asesor        | 11111111       | 11111111              |
-| Core Bancario    | Administrador | 11111112       | 11111112              |
-| Core Bancario    | Jefe Regional | 11111113       | 11111113              |
-| Core Bancario    | Riesgos       | 11111114       | 11111114              |
+| Core Bancario    | Asesor        | 11111111       | ************          |
+| Core Bancario    | Administrador | 11111112       | ************          |
+| Core Bancario    | Jefe Regional | 11111113       | ************          |
+| Core Bancario    | Riesgos       | 11111114       | ************          |
 | Homebanking      | Cliente       | DNI registrado | Contraseña registrada |
-| Homebanking demo | Cliente       | cli000001      | demo1234              |
+| Homebanking demo | Cliente       | 75915758       | ************          |
 
-> Nota: En modo desarrollo, el personal del banco puede autenticarse usando el DNI como usuario y contraseña. Si el entorno fue configurado con contraseña general, también puede utilizarse `bbva123`, según la configuración final del backend Core.
+> Nota: Todas las contraseñas reales e individuales de exposición para la demo en local se encuentran registradas de forma segura en el archivo local privado `docs_entregable/08_manual_instalacion/05_credenciales_prueba_PRIVADO.md`, el cual está excluido de GitHub por seguridad. En esta documentación pública se muestran de forma censurada.
 
 ---
 

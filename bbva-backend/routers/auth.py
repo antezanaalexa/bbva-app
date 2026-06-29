@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from repositories.base import get_connection
+from services.jwt_service import create_access_token
 
 router = APIRouter()
 
@@ -45,21 +46,27 @@ def login(datos: LoginRequest):
         if not usuario:
             raise HTTPException(status_code=401, detail="Credenciales incorrectas")
 
-        # Verificar contraseña encriptada (o en texto plano por compatibilidad temporal si es necesario, pero obligamos Bcrypt)
+        # Verificar contraseña encriptada (obligando Bcrypt)
         import bcrypt
         try:
             if not bcrypt.checkpw(datos.password.encode('utf-8'), usuario["password_hash"].encode('utf-8')):
                 raise HTTPException(status_code=401, detail="Credenciales incorrectas")
-        except ValueError:
-            # Si la base de datos tenía contraseñas en texto plano de pruebas anteriores
-            if datos.password != usuario["password_hash"]:
-                raise HTTPException(status_code=401, detail="Credenciales incorrectas (hash inválido)")
+        except Exception:
+            raise HTTPException(status_code=401, detail="Credenciales incorrectas")
 
         if usuario["estado"] != "activo":
             raise HTTPException(status_code=403, detail="Usuario inactivo")
 
+        token = create_access_token({
+            "sub": str(usuario["id"]),
+            "dni": usuario["dni"],
+            "rol": usuario["rol"]
+        })
+
         return {
             "success": True,
+            "access_token": token,
+            "token_type": "bearer",
             "user": {
                 "id": usuario["id"],
                 "dni": usuario["dni"],
@@ -161,8 +168,16 @@ def register(datos: RegisterRequest):
 
         conn.commit()
 
+        token = create_access_token({
+            "sub": str(usuario["id"]),
+            "dni": usuario["dni"],
+            "rol": usuario["rol"]
+        })
+
         return {
             "success": True,
+            "access_token": token,
+            "token_type": "bearer",
             "user": {
                 "id": usuario["id"],
                 "dni": usuario["dni"],

@@ -1,0 +1,108 @@
+Rúbrica de Evaluación — Proyecto Integrado Banco
+Andino
+Sistema Core Bancario + Homebanking integrados, funcionando como un único proyecto end-to-end.
+Puntaje total: 20 puntos
+Criterios: 5 criterios × 4 puntos cada uno
+Alcance: El Core financiero y el Homebanking deben comportarse como un solo proyecto que
+comparte la misma base de datos (bd_core_financiero) y permite flujos completos de extremo a
+extremo.
+Criterio 1 — Integración Core ↔ Homebanking (4 pts)
+Evalúa que ambos sistemas compartan la misma base de datos y que el flujo cruce de un sistema a otro sin
+rupturas.
+Nivel Pts Descripción
+Excelente 4
+El cliente solicita un crédito desde el Homebanking → la solicitud aparece en el Core,
+se evalúa/aprueba/desembolsa → el desembolso se refleja de vuelta en el
+Homebanking (saldo y movimientos). Flujo completo verificado.
+Bueno 3 El flujo cruza ambos sistemas pero requiere algún paso manual o un dato no se
+sincroniza automáticamente.
+Regular 2 Core y Homebanking funcionan por separado sobre la misma BD, pero no hay un
+flujo que los conecte.
+Insuficiente0–
+1 Sistemas aislados, BDs distintas, o no hay integración.
+Criterio 2 — Reglas de negocio del crédito (4 pts)
+Evalúa que la lógica refleje la normativa real (elegibilidad, scoring, RDS, ruta de aprobación, comité,
+desembolso).
+Nivel Pts Descripción
+Excelente 4
+Implementa elegibilidad (sujeto de crédito), scoring, RDS con semáforo, ruta de
+aprobación por montos (opinión Admin/Jefe Reg./Riesgos, comité) y desembolso
+con cronograma, alineados a la normativa.
+Bueno 3 Implementa el flujo completo pero faltan 1–2 reglas (p.ej. umbrales de comité o ratios
+RDS incompletos).
+Regular 2 Flujo básico de solicitud→aprobación sin reglas normativas reales.
+RUBRICA_EVALUACION_PROYECTO.md 2026-06-05
+1 / 4
+Nivel Pts Descripción
+Insuficiente0–
+1 No hay reglas de negocio o son inventadas/incoherentes.
+Criterio 3 — Seguridad y control de acceso por roles (RBAC + JWT) (4pts)
+Evalúa autenticación, autorización por cargo y que cada actor solo pueda hacer lo que le corresponde.
+Nivel Pts Descripción
+Excelente 4
+Login con JWT en Core y Homebanking; matriz de permisos por rol (asesor,
+administrador, riesgos, comité, gerencia, cliente); acciones críticas (resolver comité,
+derivar judicial, castigar) bloqueadas correctamente (403 a quien no corresponde).
+Bueno 3 JWT + roles funcionando, pero algún permiso mal asignado o sin validar en backend.
+Regular 2 Hay login pero el control de roles es parcial o solo en el frontend.
+Insuficiente0–
+1 Sin autenticación real o cualquier usuario puede hacer cualquier cosa.
+Criterio 4 — Módulo de Recuperaciones / Mora (R1·R2·R3) (4 pts)
+Evalúa la gestión de cartera morosa: consulta, gestión de cobranza y transiciones de estado.
+Nivel Pts Descripción
+Excelente 4
+R1 consulta por bandas (Preventiva/Temprana/Tardía/Judicial/Castigo) con KPIs; R2
+registro e historial de gestiones; R3 transición a judicial (≥121 días) y castigo (>180
+días) con validación de umbrales y permisos.
+Bueno 3 R1 + R2 completos; R3 parcial (una sola transición o sin validar umbrales).
+Regular 2 Solo consulta de mora (R1), sin gestión ni transiciones.
+Insuficiente0–
+1 No existe el módulo o no opera sobre datos reales.
+Criterio 5 — Calidad de datos, arquitectura y documentación (4 pts)
+Evalúa la consistencia de la BD, la arquitectura en capas y la documentación de respaldo.
+Nivel Pts Descripción
+Excelente 4
+BD con integridad referencial y datos calibrados a proporciones reales (mora
+~13%, 2 productos); arquitectura en capas
+(rutas→controladores→servicios/repositorios→BD); scripts SQL versionados (00–07);
+Historias de Usuario + RF y diagramas UML completos.
+RUBRICA_EVALUACION_PROYECTO.md 2026-06-05
+2 / 4
+Nivel Pts Descripción
+Bueno 3 Arquitectura y datos correctos, pero documentación o scripts incompletos.
+Regular 2 Funciona pero con datos inconsistentes o sin documentación.
+Insuficiente0–
+1 Datos incoherentes, sin estructura ni documentación.
+Resumen de puntaje
+# Criterio Pts
+1 Integración Core ↔ Homebanking 4
+2 Reglas de negocio del crédito 4
+3 Seguridad y RBAC (JWT + roles) 4
+4 Recuperaciones / Mora (R1·R2·R3) 4
+5 Calidad de datos, arquitectura y documentación4
+TOTAL 20
+Escala de calificación
+Rango Calificación
+18 – 20 Sobresaliente
+14 – 17 Notable
+11 – 13 Aprobado
+0 – 10 Desaprobado
+Hoja de autoevaluación
+# Criterio Nivel
+obtenido Pts Evidencia /
+Observación
+1 Integración Core ↔ Homebanking / 4
+2 Reglas de negocio del crédito / 4
+3 Seguridad y RBAC / 4
+4 Recuperaciones / Mora / 4
+5 Calidad de datos, arquitectura y
+documentación / 4
+RUBRICA_EVALUACION_PROYECTO.md 2026-06-05
+3 / 4
+# Criterio Nivel
+obtenido Pts Evidencia /
+Observación
+TOTAL /
+20
+RUBRICA_EVALUACION_PROYECTO.md 2026-06-05
+4 / 4

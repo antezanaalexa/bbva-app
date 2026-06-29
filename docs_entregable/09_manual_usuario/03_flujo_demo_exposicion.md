@@ -44,7 +44,7 @@
 **Contexto:** "El asesor de negocios recibe la solicitud en su bandeja."
 
 1. Abrir http://localhost:5174
-2. Login como **Asesor** (DNI: `11111111`)
+2. Login como **Asesor** (DNI: `11111111` / Contraseña demo en el manual privado local)
 3. Mostrar el Dashboard → KPIs del asesor
 4. Ir a **"Mis Solicitudes"** (bandeja propia)
 5. Mostrar la solicitud que acaba de entrar del Homebanking
@@ -71,7 +71,7 @@
 **Contexto:** "El administrador gestiona la bandeja completa."
 
 1. Abrir ventana privada → http://localhost:5174
-2. Login como **Administrador** (DNI: `11111112`)
+2. Login como **Administrador** (DNI: `11111112` / Contraseña demo en el manual privado local)
 3. Ir a **"Bandeja de Solicitudes"**
 4. Mostrar que ve TODAS las solicitudes (incluyendo la de S/ 80,000)
 5. Seleccionar la solicitud de S/ 80,000 → **"Ver Detalle"**
