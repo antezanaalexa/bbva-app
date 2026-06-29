@@ -37,10 +37,11 @@ class TransaccionRepository:
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT *
-            FROM transacciones
-            WHERE user_id = %s
-            ORDER BY fecha DESC
+            SELECT t.*, c.moneda
+            FROM transacciones t
+            LEFT JOIN cuentas c ON t.cuenta_id = c.id
+            WHERE t.user_id = %s
+            ORDER BY t.fecha DESC
             LIMIT 20
         """, (str(user_id),))
 
@@ -54,10 +55,11 @@ class TransaccionRepository:
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT *
-            FROM transacciones
-            WHERE cuenta_id = %s
-            ORDER BY fecha DESC
+            SELECT t.*, c.moneda
+            FROM transacciones t
+            LEFT JOIN cuentas c ON t.cuenta_id = c.id
+            WHERE t.cuenta_id = %s
+            ORDER BY t.fecha DESC
         """, (str(cuenta_id),))
 
         data = cur.fetchall()

@@ -119,17 +119,17 @@ export default function SolicitudDetallePage() {
 
           <h3 style={{ marginTop: 24, color: 'var(--c-primary-dark)', fontSize: '16px' }}>Datos Financieros</h3>
           <ul className="detalle-list">
-            <li><span>Monto Solicitado</span><span><strong>{money(solicitud.monto)}</strong></span></li>
+            <li><span>Monto Solicitado</span><span><strong>{money(solicitud.monto, solicitud.moneda)}</strong></span></li>
             <li><span>Plazo</span><span><strong>{solicitud.plazo_meses} meses</strong></span></li>
             <li><span>TEA</span><span><strong>{pct(solicitud.tasa_anual)}</strong></span></li>
-            <li><span>Cuota Mensual</span><span><strong>{money(solicitud.cuota_mensual)}</strong></span></li>
+            <li><span>Cuota Mensual</span><span><strong>{money(solicitud.cuota_mensual, solicitud.moneda)}</strong></span></li>
             <li><span>Propósito</span><span><strong style={{textTransform:'capitalize'}}>{solicitud.proposito}</strong></span></li>
             <li><span>Fecha de Solicitud</span><span><strong>{new Date(solicitud.created_at).toLocaleDateString()}</strong></span></li>
           </ul>
 
           <h3 style={{ marginTop: 24, color: 'var(--c-primary-dark)', fontSize: '16px' }}>Evaluación Crediticia (Motor BBVA)</h3>
           <ul className="detalle-list">
-            <li><span>Ingresos Declarados</span><span><strong>{money(solicitud.ingresos_mensuales)}</strong></span></li>
+            <li><span>Ingresos Declarados</span><span><strong>{money(solicitud.ingresos_mensuales, solicitud.moneda)}</strong></span></li>
             <li><span>Ratio de Deuda (RDS)</span><span><strong>{solicitud.rds}%</strong></span></li>
             <li><span>Score Crediticio</span><span><strong>{solicitud.score}</strong></span></li>
             <li><span>Nivel de Aprobación</span><span><RoleBadge role={solicitud.nivel_aprobacion} /></span></li>

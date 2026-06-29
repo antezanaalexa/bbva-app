@@ -114,7 +114,7 @@ export default function SolicitudesBandejaPage() {
               </div>
               <div className="wb-field">
                 <label>Monto</label>
-                <span className="val">{sel ? money(sel.monto) : '—'}</span>
+                <span className="val">{sel ? money(sel.monto, sel.moneda) : '—'}</span>
               </div>
               <div className="wb-field">
                 <label>Estado</label>
@@ -175,7 +175,7 @@ export default function SolicitudesBandejaPage() {
                   >
                     <td><span style={{ fontSize: '11px', color: 'var(--c-text-soft)' }}>{s.id.split('-')[0]}</span></td>
                     <td style={{ fontWeight: '600', color: 'var(--c-primary-dark)' }}>{s.cliente}</td>
-                    <td className="num">{money(s.monto)}</td>
+                    <td className="num">{money(s.monto, s.moneda)}</td>
                     <td className="num">{s.plazo_meses}</td>
                     <td className="num">{s.rds}%</td>
                     <td style={{ fontWeight: '700' }}>{s.score}</td>

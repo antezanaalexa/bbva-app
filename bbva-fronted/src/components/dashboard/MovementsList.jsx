@@ -50,7 +50,8 @@ export default function MovementsList({ movimientos, loading }) {
               </div>
 
               <p className="font-black text-[#072146]">
-                {mov.tipo === "ingreso" ? "+" : "-"}S/{" "}
+                {mov.tipo === "ingreso" ? "+" : "-"}
+                {mov.moneda === "USD" ? "US$ " : "S/ "}
                 {Math.abs(Number(mov.monto)).toFixed(2)}
               </p>
             </div>

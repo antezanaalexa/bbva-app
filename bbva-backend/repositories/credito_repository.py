@@ -27,7 +27,7 @@ class CreditoRepository:
             )
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             RETURNING *
-    """, (
+        """, (
             str(datos["user_id"]),
             datos["monto"],
             datos["plazo_meses"],
@@ -44,6 +44,17 @@ class CreditoRepository:
         ))
 
         data = cur.fetchone()
+        if data and data.get("cuenta_destino_id"):
+            cur.execute("SELECT moneda FROM cuentas WHERE id = %s", (str(data["cuenta_destino_id"]),))
+            cta = cur.fetchone()
+            if cta:
+                data["moneda"] = cta["moneda"]
+            else:
+                data["moneda"] = "PEN"
+        else:
+            if data:
+                data["moneda"] = "PEN"
+
         conn.commit()
         cur.close()
         conn.close()
@@ -54,10 +65,11 @@ class CreditoRepository:
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT *
-            FROM solicitudes_prestamo
-            WHERE user_id = %s
-            ORDER BY created_at DESC
+            SELECT s.*, c.moneda
+            FROM solicitudes_prestamo s
+            LEFT JOIN cuentas c ON s.cuenta_destino_id = c.id
+            WHERE s.user_id = %s
+            ORDER BY s.created_at DESC
         """, (str(user_id),))
 
         data = cur.fetchall()
@@ -72,9 +84,10 @@ class CreditoRepository:
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT *
-            FROM solicitudes_prestamo
-            WHERE id = %s
+            SELECT s.*, c.moneda
+            FROM solicitudes_prestamo s
+            LEFT JOIN cuentas c ON s.cuenta_destino_id = c.id
+            WHERE s.id = %s
         """, (str(solicitud_id),))
 
         data = cur.fetchone()

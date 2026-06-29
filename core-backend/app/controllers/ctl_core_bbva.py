@@ -25,6 +25,11 @@ def get_solicitudes(db: Session):
     solicitudes = db.query(SolicitudPrestamo, AppUsuario).join(AppUsuario).order_by(SolicitudPrestamo.created_at.desc()).all()
     result = []
     for sol, user in solicitudes:
+        moneda = "PEN"
+        if sol.cuenta_destino_id:
+            cuenta = db.query(Cuenta).filter(Cuenta.id == sol.cuenta_destino_id).first()
+            if cuenta:
+                moneda = cuenta.moneda
         result.append({
             "id": sol.id,
             "user_id": sol.user_id,
@@ -37,7 +42,8 @@ def get_solicitudes(db: Session):
             "score": sol.score,
             "nivel_aprobacion": sol.nivel_aprobacion,
             "estado": sol.estado,
-            "created_at": sol.created_at
+            "created_at": sol.created_at,
+            "moneda": moneda
         })
     return result
 
@@ -52,6 +58,11 @@ def get_solicitudes_por_nivel(db: Session, nivel: str):
     )
     result = []
     for sol, user in solicitudes:
+        moneda = "PEN"
+        if sol.cuenta_destino_id:
+            cuenta = db.query(Cuenta).filter(Cuenta.id == sol.cuenta_destino_id).first()
+            if cuenta:
+                moneda = cuenta.moneda
         result.append({
             "id": sol.id,
             "user_id": sol.user_id,
@@ -64,7 +75,8 @@ def get_solicitudes_por_nivel(db: Session, nivel: str):
             "score": sol.score,
             "nivel_aprobacion": sol.nivel_aprobacion,
             "estado": sol.estado,
-            "created_at": sol.created_at
+            "created_at": sol.created_at,
+            "moneda": moneda
         })
     return result
 
@@ -74,6 +86,13 @@ def get_solicitud(db: Session, solicitud_id: str):
     if not solicitud:
         return None
     user = db.query(AppUsuario).filter(AppUsuario.id == solicitud.user_id).first()
+    
+    moneda = "PEN"
+    if solicitud.cuenta_destino_id:
+        cuenta = db.query(Cuenta).filter(Cuenta.id == solicitud.cuenta_destino_id).first()
+        if cuenta:
+            moneda = cuenta.moneda
+
     return {
         "solicitud": {
             "id": solicitud.id,
@@ -89,7 +108,8 @@ def get_solicitud(db: Session, solicitud_id: str):
             "score": solicitud.score,
             "nivel_aprobacion": solicitud.nivel_aprobacion,
             "estado": solicitud.estado,
-            "created_at": solicitud.created_at
+            "created_at": solicitud.created_at,
+            "moneda": moneda
         },
         "cliente": {
             "id": user.id,

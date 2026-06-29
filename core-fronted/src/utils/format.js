@@ -1,13 +1,12 @@
-/** Formatea un número como moneda en soles (PEN). */
-export function money(v) {
+/** Formatea un número como moneda en soles (PEN) o dólares (USD) dinámicamente. */
+export function money(v, currency) {
   const n = Number(v)
   if (Number.isNaN(n)) return '—'
-  return n.toLocaleString('es-PE', {
-    style: 'currency',
-    currency: 'PEN',
+  const symbol = currency === "USD" ? "US$" : "S/";
+  return `${symbol} ${n.toLocaleString('es-PE', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  })
+  })}`
 }
 
 /** Formatea un número con separador de miles. */
