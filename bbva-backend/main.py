@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import cuentas, transacciones, ahorros, creditos, pagos, auth
@@ -8,9 +9,12 @@ app = FastAPI(
     description="Backend del portal de Banca por Internet BBVA Perú"
 )
 
+allowed_origins_str = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173")
+allowed_origins = [orig.strip() for orig in allowed_origins_str.split(",") if orig.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]

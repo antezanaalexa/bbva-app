@@ -4,6 +4,7 @@ from app.routes import (
     rtr_scoring, rtr_creditos, rtr_ahorros,
     rtr_dashboard, rtr_clientes, rtr_auth, rtr_homebanking, rtr_recuperaciones, rtr_core_bbva
 )
+from app.core.cfg_config import settings
 
 app = FastAPI(
     title="Core Financiero — BBVA",
@@ -11,9 +12,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
+allowed_origins = [orig.strip() for orig in settings.CORS_ALLOWED_ORIGINS.split(",") if orig.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174"],  # React Vite frontend
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

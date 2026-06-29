@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     PORTAL_BACKEND_URL: str = "http://localhost:8000"
+    CORS_ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:5174"
     PORT: int = 8001
 
     class Config:
