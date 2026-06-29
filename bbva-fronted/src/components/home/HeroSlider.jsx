@@ -1,30 +1,32 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import cuentaGanadoraBBVA from "../../assets/cuenta-ganadora-bbva.jpg";
 
 const slides = [
     {
-        title: "Tu primera tarjeta, sin miedo al crédito",
-        text: "Obtén tu Tarjeta de Crédito BBVA y empieza tu historial financiero.",
-        button: "Solicítala aquí",
-        image:
-            "https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1200",
-    },
-
-    {
-        title: "Todo con Plin, en un solo toque",
-        text: "Paga y recibe dinero fácilmente desde tu celular.",
-        button: "Únete a Plin",
-        image:
-            "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1200",
-    },
-
-    {
-        title: "Tu cuenta sin costo",
-        text: "Empieza hoy con una cuenta digital rápida y segura.",
+        title: "Gana hasta S/10 millones con Cuenta Ganadora",
+        text: "Ahorra desde S/1,500 y participa en \"Atrapa tus Sueños\". Gana premios increíbles, experiencias únicas, viajes y más!",
         button: "Abrir cuenta",
-        image:
-            "https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=1200",
+        secondaryButton: "Mira el programa",
+        image: cuentaGanadoraBBVA,
+        link: "/registro"
+    },
+
+    {
+        title: "Tu primera tarjeta, sin costo de membresía",
+        text: "Obtén tu Tarjeta de Crédito BBVA y empieza tu historial financiero hoy mismo.",
+        button: "Solicítala aquí",
+        image: "https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1200",
+        link: "/registro"
+    },
+
+    {
+        title: "Cuenta Digital BBVA sin mantenimiento",
+        text: "Abre tu cuenta 100% online y sin costo. Maneja tu dinero sin comisiones.",
+        button: "Abrir cuenta",
+        image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=1200",
+        link: "/registro"
     },
 ];
 
@@ -53,178 +55,159 @@ export default function HeroSlider() {
     };
 
     return (
-        <section className="py-8 px-6">
-
+        <section className="py-6 px-6">
             <div
                 className="
-          max-w-7xl
-          mx-auto
-          bg-[#f7f7f7]
-          rounded-[40px]
-          overflow-hidden
-          min-h-[700px]
-          relative
-        "
+                    max-w-7xl
+                    mx-auto
+                    bg-white
+                    rounded-[32px]
+                    overflow-hidden
+                    relative
+                    shadow-lg
+                    border border-gray-100
+                "
             >
-
-                {/* SLIDE */}
+                {/* SLIDE - key={current} resets animation and prevents text overlay */}
                 <div
+                    key={current}
                     className="
-            grid
-            lg:grid-cols-2
-            items-center
-            h-full
-            px-20
-            py-20
-            gap-10
-            transition-all
-            duration-700
-          "
+                        grid
+                        lg:grid-cols-2
+                        items-center
+                        px-10
+                        py-12
+                        lg:px-16
+                        lg:py-16
+                        gap-8
+                        transition-all
+                        duration-700
+                    "
                 >
-
-                    {/* LEFT */}
-                    <div className="space-y-10 animate-fade">
-
-                        <span
-                            className="
-                bg-white
-                px-6 py-2
-                rounded-full
-                text-[#072146]
-                italic
-                text-lg
-              "
-                        >
-                            Haz más con tu dinero
-                        </span>
+                    {/* LEFT COLUMN: Text and Buttons */}
+                    <div className="space-y-6 animate-fade">
+                        <div>
+                            <span
+                                className="
+                                    bg-gray-100
+                                    px-4 py-1.5
+                                    rounded-full
+                                    text-[#072146]
+                                    font-semibold
+                                    text-xs
+                                    shadow-sm
+                                "
+                            >
+                                Haz más con tu dinero
+                            </span>
+                        </div>
 
                         <h1
                             className="
-                text-6xl
-                lg:text-7xl
-                font-black
-                text-[#072146]
-                leading-tight
-              "
+                                text-5xl
+                                lg:text-[54px]
+                                font-extrabold
+                                text-[#072146]
+                                leading-tight
+                                tracking-tight
+                            "
                         >
                             {slides[current].title}
                         </h1>
 
                         <p
                             className="
-                text-2xl
-                text-gray-700
-                leading-relaxed
-                max-w-xl
-              "
+                                text-[17px]
+                                lg:text-[18px]
+                                text-[#4A5568]
+                                leading-relaxed
+                                max-w-lg
+                            "
                         >
                             {slides[current].text}
                         </p>
 
-                        <button
-                            onClick={() => navigate("/login")}
-                            className="
-                bg-[#0726B4]
-                hover:bg-[#051D80]
-                text-white
-                px-10 py-5
-                rounded-2xl
-                font-bold
-                text-xl
-                transition
-                cursor-pointer
-              "
-                        >
-                            {slides[current].button}
-                        </button>
-
+                        <div className="flex flex-wrap gap-3 pt-2">
+                            <button
+                                onClick={() => navigate(slides[current].link || "/registro")}
+                                className="
+                                    bg-[#0726B4]
+                                    hover:bg-[#051D80]
+                                    text-white
+                                    px-6 py-3.5
+                                    rounded-xl
+                                    font-bold
+                                    text-[15px]
+                                    transition-all
+                                    duration-300
+                                    hover:scale-[1.02]
+                                    cursor-pointer
+                                "
+                            >
+                                {slides[current].button}
+                            </button>
+                            {slides[current].secondaryButton && (
+                                <button
+                                    onClick={() => navigate(slides[current].link || "/registro")}
+                                    className="
+                                        bg-[#E9EEF5]
+                                        hover:bg-[#DEE5F0]
+                                        text-[#072146]
+                                        px-6 py-3.5
+                                        rounded-xl
+                                        font-bold
+                                        text-[15px]
+                                        transition-all
+                                        duration-300
+                                        hover:scale-[1.02]
+                                        cursor-pointer
+                                    "
+                                >
+                                    {slides[current].secondaryButton}
+                                </button>
+                            )}
+                        </div>
                     </div>
 
-                    {/* RIGHT */}
-                    <div className="flex justify-center">
-
+                    {/* RIGHT COLUMN: Image */}
+                    <div className="flex justify-center lg:justify-end">
                         <img
                             src={slides[current].image}
                             alt=""
                             className="
-                w-full
-                max-w-2xl
-                h-[500px]
-                rounded-[40px]
-                object-cover
-                shadow-xl
-                transition-all
-                duration-700
-              "
+                                w-full
+                                max-w-md
+                                h-[280px]
+                                lg:h-[360px]
+                                rounded-[24px]
+                                object-cover
+                                shadow-md
+                                border border-gray-100
+                            "
                         />
-
                     </div>
                 </div>
 
-                {/* FLECHAS */}
-                <button
-                    onClick={prevSlide}
-                    className="
-            absolute
-            bottom-8
-            left-[45%]
-            bg-white
-            shadow-md
-            p-4
-            rounded-full
-            hover:scale-110
-            transition
-          "
-                >
-                    <ChevronLeft className="text-[#072146]" />
-                </button>
+                {/* CONTROLES Y PAGINACIÓN FORMATO < 1 de 3 > */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-md border border-gray-100/50">
+                    <button 
+                        onClick={prevSlide} 
+                        className="hover:scale-110 transition cursor-pointer p-1 text-[#072146] focus:outline-none"
+                    >
+                        <ChevronLeft size={16} />
+                    </button>
+                    
+                    <span className="text-[12px] font-bold text-[#072146] min-w-[42px] text-center select-none">
+                        {current + 1} de {slides.length}
+                    </span>
 
-                <button
-                    onClick={nextSlide}
-                    className="
-            absolute
-            bottom-8
-            right-[45%]
-            bg-white
-            shadow-md
-            p-4
-            rounded-full
-            hover:scale-110
-            transition
-          "
-                >
-                    <ChevronRight className="text-[#072146]" />
-                </button>
-
-                {/* INDICADORES */}
-                <div
-                    className="
-            absolute
-            bottom-10
-            left-1/2
-            -translate-x-1/2
-            flex
-            gap-3
-          "
-                >
-                    {slides.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setCurrent(index)}
-                            className={`
-                w-3
-                h-3
-                rounded-full
-                transition-all
-                ${current === index
-                                    ? "bg-[#0726B4] w-8"
-                                    : "bg-gray-300"
-                                }
-              `}
-                        />
-                    ))}
+                    <button 
+                        onClick={nextSlide} 
+                        className="hover:scale-110 transition cursor-pointer p-1 text-[#072146] focus:outline-none"
+                    >
+                        <ChevronRight size={16} />
+                    </button>
                 </div>
-
             </div>
         </section>
     );

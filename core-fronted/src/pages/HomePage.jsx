@@ -336,6 +336,7 @@ export default function HomePage() {
         <aside className="split-login">
           <div className="split-login__inner">
             <span className="split-login__secure">
+              <span className="pulse-dot" />
               <ShieldCheck size={14} strokeWidth={2.6} /> Conexión segura
             </span>
             <h2>Inicia sesión</h2>

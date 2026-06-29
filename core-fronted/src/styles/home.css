@@ -446,10 +446,10 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.88) 100%), url('/assets/edificio-bbva-2.jpg');
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.88) 100%), url('/assets/edificio-bbva.jpg');
   background-size: cover;
   background-position: center;
-  opacity: 0.25;
+  opacity: 0.35;
   z-index: 0;
 }
 /* Flores decorativas con los colores del logo */
@@ -483,8 +483,14 @@
   margin: auto;
   display: flex;
   flex-direction: column;
-  padding: 44px 40px;
+  padding: 40px;
   box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: 28px;
+  box-shadow: 0 20px 50px rgba(7, 33, 70, 0.12);
   animation: lpInnerUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
 }
 @keyframes lpInnerUp {
@@ -525,6 +531,35 @@
   letter-spacing: 0.3px;
   margin: 22px 0 16px;
 }
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  background-color: #10B981;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+}
+.pulse-dot::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: inherit;
+  border-radius: inherit;
+  top: 0;
+  left: 0;
+  animation: secure-pulse 1.8s infinite ease-in-out;
+}
+@keyframes secure-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
 .split-login h2 {
   margin: 6px 0 4px;
   font-size: 32px;
@@ -564,18 +599,18 @@
 .lp-input input {
   width: 100%;
   padding: 13px 14px 13px 46px;
-  border-radius: 24px;
-  border: 1px solid #D2D4D9;
+  border-radius: 12px;
+  border: 1.5px solid #D2D4D9;
   font-size: 14px;
   background: #ffffff;
   color: #072146;
   box-sizing: border-box;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .lp-input input:focus {
   outline: none;
   border-color: #0726B4;
-  box-shadow: 0 0 0 4px rgba(7, 38, 180, 0.15);
+  box-shadow: 0 0 0 4px rgba(7, 38, 180, 0.12);
 }
 .split-login__foot {
   margin-top: 26px;
@@ -626,21 +661,24 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #0726B4;
+  background: linear-gradient(135deg, #0726B4 0%, #051D80 100%);
   color: #ffffff;
   border: none;
   padding: 14px;
-  border-radius: 24px;
+  border-radius: 12px;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(7, 38, 180, 0.15);
-  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 12px rgba(7, 38, 180, 0.2);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .btn-login:hover:not(:disabled) {
-  background: #051D80;
+  background: linear-gradient(135deg, #0930dd 0%, #0726B4 100%);
   transform: translateY(-1px);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.26);
+  box-shadow: 0 8px 20px rgba(7, 38, 180, 0.3);
+}
+.btn-login:active:not(:disabled) {
+  transform: scale(0.98);
 }
 .btn-login:disabled {
   opacity: 0.7;
@@ -850,9 +888,22 @@
   min-height: 0;
 }
 .carrusel--fill .carrusel__content {
-  max-width: 84%;
-  padding: 0 60px;
-  gap: 14px;
+  position: absolute;
+  left: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 480px;
+  padding: 40px;
+  gap: 16px;
+  background: rgba(7, 33, 70, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .carrusel--fill .carrusel__title {
   font-size: 46px;
@@ -873,12 +924,19 @@
   margin-top: 8px;
 }
 .carrusel__chip {
-  background: rgba(255, 255, 255, 0.92);
-  color: #2b2b3a;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
-  padding: 7px 15px;
-  font-weight: 700;
-  font-size: 13.5px;
+  padding: 6px 14px;
+  font-weight: 600;
+  font-size: 12.5px;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s ease;
+}
+.carrusel__chip:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 .carrusel__track {
   display: flex;
@@ -898,14 +956,22 @@
 }
 .carrusel__content {
   position: absolute;
-  inset: 0;
+  left: 60px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 8px;
-  padding: 0 48px;
-  max-width: 62%;
+  gap: 16px;
+  padding: 36px 40px;
+  max-width: 480px;
   color: #fff;
+  background: rgba(7, 33, 70, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
 }
 .carrusel__badge {
   align-self: flex-start;
@@ -935,19 +1001,25 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.85);
-  color: var(--home-text);
+  background: #ffffff;
+  color: #072146;
   display: grid;
   place-items: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  z-index: 10;
 }
 .carrusel__arrow:hover {
-  background: #fff;
+  background: #f4f6f8;
+  transform: translateY(-50%) scale(1.05);
+}
+.carrusel__arrow:active {
+  transform: translateY(-50%) scale(0.95);
 }
 .carrusel__arrow--prev {
   left: 14px;
@@ -965,18 +1037,22 @@
   gap: 8px;
 }
 .carrusel__dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.4);
   cursor: pointer;
   padding: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.carrusel__dot:hover {
+  background: rgba(255, 255, 255, 0.7);
 }
 .carrusel__dot.active {
   background: #fff;
-  width: 26px;
-  border-radius: 6px;
+  width: 24px;
+  border-radius: 4px;
 }
 @media (max-width: 720px) {
   .carrusel__content {
